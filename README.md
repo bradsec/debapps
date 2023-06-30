@@ -1,14 +1,22 @@
 
 # debapps - Bash scripts to simplify Debian Linux app installations.
-### Compatible with most [x64] Debian based Linux distros (including Kali, Ubuntu, PopOS)
 
 - These scripts will work with most Debian based Linux distros such as Ubuntu, Kali and Pop!_OS.
 - Includes menu options to both installing and also removing the applications.
 
-### Usage Options
+### USAGE
 Option 1. (Quick) Copy and paste the one line terminal command below:
 ```
 sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main/debapps.sh)"
+```
+Option 2. Clone the repo and run the required script on the local machine.
+```terminal
+git clone https://github.com/bradsec/debapps.git
+sudo bash ./debapps/passwordapps.sh
+```
+Option 3. Alternatively run the required specific application script remotely. 
+```
+sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main/src/passwordapps.sh)"
 ```
 
 ### Example of main menu:
@@ -39,18 +47,6 @@ sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main
  12. Exit
 
 ```
-
-Option 2. Clone the repo and run the required script on the local machine.
-```terminal
-git clone https://github.com/bradsec/debapps.git
-sudo bash ./debapps/passwordapps.sh
-```
-Option 3. Alternatively run the required specific application script remotely. 
-```
-sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main/src/passwordapps.sh)"
-```
-
-
 
 Scriptname | Compatability | Applications
 ---|---|---
