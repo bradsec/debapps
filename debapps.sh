@@ -33,6 +33,7 @@ import_templates() {
 }
 
 import_templates
+print_message PASS "${SCRIPT_SOURCE} active."
 
 script_fetch() {
   local script_local="${SCRIPT_DIR}/src/${1}"
@@ -46,27 +47,7 @@ script_fetch() {
   fi
 }
 
-get_date_time
-get_os summary
-print_message INFO "Script name: ${SCRIPT_SOURCE}"
 ### END OF REQUIRED FUNCTION ###
-
-about() {
-echo ${CYAN}
-cat << "EOF"
-██████╗ ███████╗██████╗  █████╗ ██████╗ ██████╗ ███████╗
-██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝
-██║  ██║█████╗  ██████╔╝███████║██████╔╝██████╔╝███████╗
-██║  ██║██╔══╝  ██╔══██╗██╔══██║██╔═══╝ ██╔═══╝ ╚════██║
-██████╔╝███████╗██████╔╝██║  ██║██║     ██║     ███████║
-╚═════╝ ╚══════╝╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝
- 
- These scripts will work with most [x64] Debian based Linux distros.
- More info at: https://github.com/bradsec/debapps
-EOF
-echo ${RESET}
-}
-
 
 # Display a list of menu items for selection
 function display_menu () {
@@ -140,17 +121,16 @@ function display_menu () {
 			exit
 			;;
 		*)  clear
-			display_menu
+			main
             ;;
 		esac
 		clear
-		display_menu
+		main
     done
 }
 
 # Main function
 function main() {
-    check_superuser
     about
     display_menu
 }

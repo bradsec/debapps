@@ -4,7 +4,7 @@
 # Note: This template needs to be imported first.
 clear
 
-TEMPLATE_NAME="GENERIC"
+TEMPLATE_NAME="templates/generic.tmpl.sh"
 
 term_colors() {
     # Set colors for use in print_message TASK terminal output functions
@@ -217,7 +217,7 @@ function wait_for() {
 # Check if script is being run as superuser
 function check_superuser() {
     if [[ $(id -u) -ne 0 ]]; then
-        print_message FAIL "Script must be run by superuser or using sudo command.\n"
+        print_message FAIL "Script must be run by superuser or using sudo command."
         exit 1
     fi
 }
@@ -393,8 +393,6 @@ function compare_values(){
     fi
 }
 
-
-
 # Download url plaintext or similar type content and output to screen
 # Example usage: download_content "https://urlofplaintextcontent"
 function download_content() {
@@ -408,4 +406,22 @@ function download_content() {
 	fi
 }
 
-print_message INFO "${TEMPLATE_NAME} TEMPLATE IMPORTED."
+print_message PASS "${TEMPLATE_NAME} imported."
+
+function about() {
+    echo "${GREEN}"
+cat << "EOF"
+     ____  __________  ___    ____  ____  _____
+    / __ \/ ____/ __ )/   |  / __ \/ __ \/ ___/
+   / / / / __/ / __  / /| | / /_/ / /_/ /\__ \ 
+  / /_/ / /___/ /_/ / ___ |/ ____/ ____/___/ / 
+ /_____/_____/_____/_/  |_/_/   /_/    /____/  
+
+EOF
+    echo " ${RESET}Bash scripts to simplify Linux app installations."
+    echo " Compatible with most [x64] Debian based distros."
+    echo
+    get_date_time
+    get_os summary
+    check_superuser
+}

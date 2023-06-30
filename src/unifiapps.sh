@@ -33,10 +33,7 @@ import_templates() {
 }
 
 import_templates
-
-get_date_time
-get_os summary
-print_message INFO "Script name: ${SCRIPT_SOURCE}"
+print_message PASS "${SCRIPT_SOURCE} active."
 ### END OF REQUIRED FUNCTION ###
 
 function install_app() {
@@ -109,21 +106,21 @@ function display_menu () {
         3)  clear
             exit
             ;;
-		*)  clear
-			display_menu
+		    *)  clear
+			      main
             ;;
         esac
         echo
         print_message DONE "Selection [${choice}] completed."
-		wait_for user_anykey
+		    wait_for user_anykey
         clear
-        display_menu
+        main
     done
 }
 
 # Main function
 function main() {
-	check_superuser
+    about
     display_menu
 }
 

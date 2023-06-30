@@ -3,7 +3,7 @@
 # Functions for working with .AppImage files.
 # Requires: generic.sh template to be loaded first.
 
-TEMPLATE_NAME="APPIMAGE"
+TEMPLATE_NAME="templates/appimage.tmpl.sh"
 
 # Get non-root user
 function get_user() {
@@ -198,4 +198,4 @@ remove_app_image() {
     print_message DONE "${app} removed."
 }
 
-print_message INFO "${TEMPLATE_NAME} TEMPLATE IMPORTED."
+print_message PASS "${TEMPLATE_NAME} imported."

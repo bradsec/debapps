@@ -1,5 +1,6 @@
 
-# debapps - Bash shell application installation scripts suitable for most Debian based Linux distros (including Kali, Ubuntu, PopOS)
+# debapps - Bash scripts to simplify Debian Linux app installations.
+### Compatible with most [x64] Debian based Linux distros (including Kali, Ubuntu, PopOS)
 
 - These scripts will work with most Debian based Linux distros such as Ubuntu, Kali and Pop!_OS.
 - Includes menu options to both installing and also removing the applications.
@@ -12,6 +13,12 @@ sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main
 
 ### Example of main menu:
 ```terminal
+     ____  __________  ___    ____  ____  _____
+    / __ \/ ____/ __ )/   |  / __ \/ __ \/ ___/
+   / / / / __/ / __  / /| | / /_/ / /_/ /\__ \ 
+  / /_/ / /___/ /_/ / ___ |/ ____/ ____/___/ / 
+ /_____/_____/_____/_/  |_/_/   /_/    /____/  
+
  ========================
   Application Categories 
  ========================
@@ -25,8 +32,12 @@ sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main
   7. Code editor apps
   8. Virtual machine apps
   9. Burp Suite apps
- 10. Go (golang) Programming app
+
+ 10. Go (golang) installer
  11. Unifi Network Application (controller) for Raspberry Pi
+
+ 12. Exit
+
 ```
 
 Option 2. Clone the repo and run the required script on the local machine.
@@ -56,7 +67,7 @@ Scriptname | Compatability | Applications
 <a href="https://github.com/bradsec/debapps/tree/main/src/unifiapps.sh" target="_blank">unifiapps.sh</a> | Raspberry Pi | Unifi Network Application (Controller) (**)
 
 ### Notes
-* **As the scripts need to install files and change permissions outside of user home directories they require `sudo` or superuser priviledges. As with any scripts especially those requesting or using elevated privledges (sudo / root etc.) you should always review the script source code before running.**
+* **As the scripts need to install files and change permissions outside of user home directories they require `sudo` or superuser priviledges.**
 * Scripts inherit common functions from the imported <a href="https://github.com/bradsec/debapps/tree/main/src/templates" target="_blank">templates</a>.
 * Menu options for application installation and removal are provided in each script.  
 * Where possible installers will use latest sources from original author/publisher sites or github release repos instead of using Flatpaks or Snap Store package installs. AppImages are used for some applications.  
@@ -64,12 +75,10 @@ Scriptname | Compatability | Applications
 * **UPGRADING** For applications which do not auto-update or update by running `sudo apt update && sudo apt upgrade`, just re-run the install option/script to upgrade the package.
 * Most of the Debian app installers fetch x64 sources, the script sources may need modification to run on other system architecture such as x86 (32-bit) or arm processors.
 
-### Issues
-- If you identify any problems with the scripts including broken applications download links raise an issue.
-
- - On occasion when fetching/running scripts remotely using `wget` from `raw.githubusercontent.com` the command has an issue downloading the script or templates and retries or hangs. Wait a short time or just try cancelling (ctrl-c) and re-running the command again.
-
 ### Troubleshooting 
+
+- If an install fails. Try running the remove app option then try install again. If it continues to fail raise an issue with details including hardware and OS version details.
+- Some GNOME desktop icons may not appear until GNOME is shell is reloaded. Try logging out and back in.
 
 #### ** Go (golang) install
 If the Go path is not found for a non-root user try running the following command:  

@@ -3,7 +3,7 @@
 # Functions/commands specific to Debian based systems.
 # Requires: generic.sh template to be loaded first.
 
-TEMPLATE_NAME="DEBIAN"
+TEMPLATE_NAME="templates/debian.tmpl.sh"
 
 # Debian apt package related functions
 # Example usage: pkgmgr install curl wget htop nmap
@@ -187,4 +187,4 @@ function fetch_keyserver_signing_key() {
 	--keyserver ${key_server} --recv-keys ${key_fingerprint}
 }
 
-print_message INFO "${TEMPLATE_NAME} TEMPLATE IMPORTED."
+print_message PASS "${TEMPLATE_NAME} imported."
