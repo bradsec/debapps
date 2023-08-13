@@ -106,10 +106,10 @@ function pkgmgr() {
 
 # Function performs all package updates, upgrades, fixes and cleaning.
 function pkgchk() {
-    print_message INFOFULL "Updating, upgrading, fixing system packages..."
+    print_message INFO "Conducting Debian package updates, upgrades, fixes, and clean-up..."
     run_command sudo apt -y update
     run_command_verbose sudo apt -y upgrade
-    run_command sudo apt -y --fix-broken install
+    run_command_verbose sudo apt -y --fix-broken install
     run_command sudo apt -y autoclean
     run_command sudo apt -y autoremove
 }

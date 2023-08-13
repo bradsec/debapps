@@ -81,7 +81,8 @@ function display_menu () {
 			main
             ;;
 		esac
-		echo -e "\nSelection [${choice}] completed."
+    pkgchk
+		print_message DONE "\nSelection [${choice}] completed."
 		wait_for user_anykey
 		clear
 		main

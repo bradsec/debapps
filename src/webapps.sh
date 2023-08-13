@@ -213,6 +213,7 @@ function display_menu () {
 			main
             ;;
         esac
+		pkgchk
 		print_message DONE "Selection [${choice}] completed."
 		wait_for user_anykey
         clear

@@ -110,7 +110,7 @@ function display_menu () {
 			      main
             ;;
         esac
-        echo
+        pkgchk
         print_message DONE "Selection [${choice}] completed."
 		    wait_for user_anykey
         clear

@@ -291,6 +291,7 @@ function run_command_verbose() {
     local command_string="${command[*]}"
 
     print_message TASK "${command_string}"
+    echo
     "${command[@]}"
 }
 
@@ -319,7 +320,7 @@ function file_hash(){
     local option=${1}
     local filename=${2}
     case "${option}" in
-        all) print_message INFO "File hash values for ${filename}...\n"
+        all) print_message INFO "File hash values for ${filename}..."
             echo -e "   MD5 $(md5sum ${filename} | cut -d ' ' -f 1)"
             echo -e "  SHA1 $(sha1sum ${filename} | cut -d ' ' -f 1)"
             echo -e "SHA256 $(sha256sum ${filename} | cut -d ' ' -f 1)\n";;
