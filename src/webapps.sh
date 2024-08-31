@@ -41,35 +41,26 @@ function install_firefox() {
 	print_message WARN "This script will attempt to remove any existing installations of Firefox including Firefox ESR."
 	print_message WARN "Existing Firefox settings and preferences will be lost."
 	wait_for user_continue
+	# Check requirements
+	pkgmgr install apt-transport-https wget
     # Remove any previous firefox packages
     pkgmgr remove firefox-esr
     pkgmgr remove firefox
-	# Add fix for missing XPCOM error libdbus-glib-1.so.2 cannot open shared object
-	apt-get -y install libdbus-glib-1-2 || true
-	# Download latest linux 64 version
-	local from_url="https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US"
-	local save_file="/tmp/firefox.tar.bz2"
-	download_file ${save_file} ${from_url}
-    # Extract files to /opt/
-    run_command tar -xvf ${save_file} --directory /opt/
-    run_command sudo ln -sf /opt/firefox/firefox /usr/sbin/firefox
-    # Write desktop icon configuration file
-	local firefox_config="[Desktop Entry]
-	Name=Firefox
-	Comment=Browse the World Wide Web
-	GenericName=Web Browser
-	X-GNOME-FullName=Firefox Web Browser
-	Exec=/opt/firefox/firefox %u
-	Terminal=false
-	X-MultipleArgs=false
-	Type=Application
-	Icon=/opt/firefox/browser/chrome/icons/default/default48.png
-	Categories=Network;WebBrowser;
-	MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
-	StartupWMClass=Firefox
-	StartupNotify=true"
-    write_config_file "${firefox_config}" "/usr/share/applications/firefox.desktop"
-    run_command rm ${save_file}
+	# ref https://support.mozilla.org/en-US/kb/install-firefox-linux
+	# Fetch signing keys and add apt source
+	sudo install -d -m 0755 /etc/apt/keyrings
+	wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+	echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+	echo '
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+
+Package: firefox*
+Pin: release o=Ubuntu
+Pin-Priority: -1' | sudo tee /etc/apt/preferences.d/mozilla
+	sudo apt update
+	pkgmgr install firefox
 	print_message DONE "Firefox installed."
 }
 
@@ -184,7 +175,11 @@ function display_menu () {
             install_postman
             ;;
         6)  clear
-            remove_opt_app firefox
+            pkgmgr remove firefox
+			run_command sudo apt -y update
+			run_command rm -f /etc/apt/sources.list.d/mozilla.list
+			run_command sudo apt -y update
+			pkgmgr cleanup
             ;;
         7)  clear
             pkgmgr remove google-chrome-stable

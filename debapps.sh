@@ -55,19 +55,17 @@ function display_menu () {
     echo -e " ========================"                         
     echo -e "  Application Categories "
     echo -e " ========================\n"
-    echo -e "  1. Password manager apps"
+    echo -e "  1. Password Manager apps"
     echo -e "  2. Note apps"
     echo -e "  3. Messenger apps"
     echo -e "  4. Office apps"
     echo -e "  5. Collaboration apps"
-    echo -e "  6. Web browsers and other web apps"
-    echo -e "  7. Code editor apps"
-    echo -e "  8. Virtual machine apps"
+    echo -e "  6. Web Browsers and Web API Tools"
+    echo -e "  7. Code Editor apps"
+    echo -e "  8. Virtual Machine (VM) apps"
     echo -e "  9. Burp Suite apps\n"
-    echo -e " 10. Go (golang) installer"
-    echo -e " 11. Unifi Network Application (controller) for Raspberry Pi\n"
-    echo -e " 12. Exit\n"
-    echo -n "     Enter option [1-12]: "
+    echo -e " 10. Exit\n"
+    echo -n "     Enter option [1-10]: "
 
     while :
     do
@@ -109,15 +107,7 @@ function display_menu () {
             print_message INFO "Fetching Burp application options..."
 			      script_fetch burpapps.sh
 			;;
-		10)  clear
-            print_message INFO "Fetching Go application options..."
-            script_fetch goapps.sh
-			;;
-		11)  clear
-            print_message INFO "Fetching Raspberry Pi Unifi controller options..."
-			      script_fetch unifiapps.sh
-			;;
-		12) clear
+		10) clear
 			exit
 			;;
 		*)  clear
