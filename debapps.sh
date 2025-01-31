@@ -62,9 +62,8 @@ function display_menu () {
     echo -e "  5. Collaboration apps"
     echo -e "  6. Web Browsers and Web API Tools"
     echo -e "  7. Code Editor apps"
-    echo -e "  8. Virtual Machine (VM) apps"
-    echo -e "  9. Burp Suite apps\n"
-    echo -e " 10. Exit\n"
+    echo -e "  8. Burp Suite apps\n"
+    echo -e "  9. Exit\n"
     echo -n "     Enter option [1-10]: "
 
     while :
@@ -100,14 +99,10 @@ function display_menu () {
 			      script_fetch codeeditapps.sh
 			;;
 		8)  clear
-            print_message INFO "Fetching Virtual machine application options..."
-            script_fetch vmapps.sh
-			;;
-		9)  clear
             print_message INFO "Fetching Burp application options..."
 			      script_fetch burpapps.sh
 			;;
-		10) clear
+		9) clear
 			exit
 			;;
 		*)  clear

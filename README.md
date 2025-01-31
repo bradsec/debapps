@@ -30,6 +30,10 @@ sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main
  Bash scripts to simplify Linux app installations.
  Compatible with most [x64] Debian based distros.
 
+ i 31-Jan-2025 11:26:25
+ i OS Detected: Debian GNU/Linux 12 (bookworm) x86_64
+ i Hardware Detected: 13th Gen Intel(R) Core(TM) i7-13700K
+
  ========================
   Application Categories 
  ========================
@@ -41,10 +45,9 @@ sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main
   5. Collaboration apps
   6. Web Browsers and Web API Tools
   7. Code Editor apps
-  8. Virtual Machine (VM) apps
-  9. Burp Suite apps
+  8. Burp Suite apps
 
- 10. Exit
+  9. Exit
 
 ```
 
@@ -57,7 +60,6 @@ Scriptname | Compatability | Applications
 <a href="https://github.com/bradsec/debapps/tree/main/src/collabapps.sh" target="_blank">collabapps.sh</a> | Debian/Ubuntu | Discord, Slack, Zoom, Microsoft Teams
 <a href="https://github.com/bradsec/debapps/tree/main/src/webapps.sh" target="_blank">webapps.sh</a> | Debian/Ubuntu | Firefox, Google Chrome, Brave, TOR Browser, Postman API Tool
 <a href="https://github.com/bradsec/debapps/tree/main/src/codeeditapps.sh" target="_blank">codeeditapps.sh</a> | Debian/Ubuntu | Sublime-Text 3 & 4, Visual Studio Codium, Microsoft Visual Studio Code (VSCode), Cursor ai
-<a href="https://github.com/bradsec/debapps/tree/main/src/vmapps.sh" target="_blank">vmapps.sh</a> | Debian/Ubuntu | VMWare Workstation & Player, Oracle VirtualBox - GUI Installer
 <a href="https://github.com/bradsec/debapps/tree/main/src/burpapps.sh" target="_blank">burpapps.sh</a> | Debian/Ubuntu | PortSwigger Burp Suite Community or Professional Editions - GUI Installer
 
 ### Notes
