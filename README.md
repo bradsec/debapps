@@ -56,7 +56,7 @@ Scriptname | Compatability | Applications
 <a href="https://github.com/bradsec/debapps/tree/main/src/officeapps.sh" target="_blank">officeapps.sh</a> | Debian/Ubuntu | OnlyOffice, LibreOffice
 <a href="https://github.com/bradsec/debapps/tree/main/src/collabapps.sh" target="_blank">collabapps.sh</a> | Debian/Ubuntu | Discord, Slack, Zoom, Microsoft Teams
 <a href="https://github.com/bradsec/debapps/tree/main/src/webapps.sh" target="_blank">webapps.sh</a> | Debian/Ubuntu | Firefox, Google Chrome, Brave, TOR Browser, Postman API Tool
-<a href="https://github.com/bradsec/debapps/tree/main/src/codeeditapps.sh" target="_blank">codeeditapps.sh</a> | Debian/Ubuntu | Sublime-Text 3 & 4, Visual Studio Codium, Microsoft Visual Studio Code (VSCode)
+<a href="https://github.com/bradsec/debapps/tree/main/src/codeeditapps.sh" target="_blank">codeeditapps.sh</a> | Debian/Ubuntu | Sublime-Text 3 & 4, Visual Studio Codium, Microsoft Visual Studio Code (VSCode), Cursor ai
 <a href="https://github.com/bradsec/debapps/tree/main/src/vmapps.sh" target="_blank">vmapps.sh</a> | Debian/Ubuntu | VMWare Workstation & Player, Oracle VirtualBox - GUI Installer
 <a href="https://github.com/bradsec/debapps/tree/main/src/burpapps.sh" target="_blank">burpapps.sh</a> | Debian/Ubuntu | PortSwigger Burp Suite Community or Professional Editions - GUI Installer
 
