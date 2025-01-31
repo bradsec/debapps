@@ -4,7 +4,7 @@ SCRIPT_SOURCE="codeeditapps.sh"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 #### START OF REQUIRED INFORMATION FOR IMPORTING BASH TEMPLATES ###
-TEMPLATES_REQUIRED=("generic.tmpl.sh" "debian.tmpl.sh")
+TEMPLATES_REQUIRED=("generic.tmpl.sh" "debian.tmpl.sh" "appimage.tmpl.sh")
 
 # Imports bash script functions from a local template or the github hosted template file.
 import_templates() {
@@ -35,6 +35,55 @@ import_templates() {
 import_templates
 print_message PASS "${SCRIPT_SOURCE} active."
 ### END OF REQUIRED FUNCTION ###
+
+function get_arch_for_cursor() {
+    local arch=$(uname -m)
+    if [ "$arch" == "x86_64" ]; then
+        echo "x64"
+    elif [ "$arch" == "aarch64" ]; then
+        echo "arm64"
+    else
+        echo "Unsupported architecture: $arch" >&2
+        exit 1
+    fi
+}
+
+function install_opt_app() {
+    local app="${1}"
+    print_message INFOFULL "This script will install ${app} using the latest AppImage."
+	print_message WARN "Any existing ${app} settings or configuration may be lost."
+	wait_for user_continue
+	# Update packages and install required packages
+	print_message INFO "Checking for required packages..."
+	run_command sudo apt -y update
+	pkgmgr install curl wget
+    # If available or required (Ubuntu) install
+    pkgmgr install libfuse2
+	pkgmgr remove ${app}
+    if [[ "${app}" == "cursor" ]]; then
+		local cursor_arch=$(get_arch_for_cursor)
+        local from_url="https://downloader.cursor.sh/linux/appImage/${cursor_arch}"
+    fi
+
+    if [[ -d "/opt/${app}" ]]; then
+        print_message WARN "A directory for /opt/${app} already exists. Any existing files may be overwritten."
+	    wait_for user_continue
+    else
+        run_command mkdir -p "/opt/${app}"
+    fi
+
+    local appimage_save_file="/opt/${app}/${app}.AppImage"
+    print_message INFO "Found ${app} version: ${version_number}"
+    download_file ${appimage_save_file} ${from_url}
+    setup_app_image ${appimage_save_file}
+}
+
+function remove_opt_app() {
+    local app="${1}"
+	print_message WARN "This will delete and remove all files, settings and configuration for ${app}."
+	wait_for user_continue
+    remove_app_image "/opt/${app}"
+}
 
 function install_sublimetext4() {
 	print_message INFO "Installing Sublime-Text 4..."
@@ -72,11 +121,13 @@ function display_menu () {
     echo -e " ==============\n"
     echo -e " 1. Install Sublime-Text 4"
     echo -e " 2. Install VS Codium"
-    echo -e " 3. Install VS Code\n"
-    echo -e " 4. Remove Sublime-Text"
-    echo -e " 5. Remove VS Codium"
-    echo -e " 6. Remove VS Code\n"
-    echo -e " 7. Exit\n"
+    echo -e " 3. Install VS Code"
+	echo -e " 4. Install Cursor AI\n"
+    echo -e " 5. Remove Sublime-Text"
+    echo -e " 6. Remove VS Codium"
+	echo -e " 7. Remove VS Code"
+    echo -e " 8. Remove Cursor\n"
+    echo -e " 9. Exit\n"
     echo -n "    Enter option [1-7]: "
 
     while :
@@ -94,19 +145,25 @@ function display_menu () {
 			install_vscode
 			;;
 		4)  clear
+			install_opt_app cursor
+			;;
+		5)  clear
 			pkgmgr remove sublime-text
 			run_command rm -f /etc/apt/sources.list.d/sublimetext.list
 			run_command sudo apt -y update
 			;;
-		5)  clear
+		6)  clear
 			pkgmgr remove codium
 			;;
-		6)  clear
+		7)  clear
 			pkgmgr remove code
 			run_command rm -f /etc/apt/sources.list.d/vscode.list
 			run_command sudo apt -y update
 			;;
-		7)  clear
+        8)  clear
+            remove_opt_app cursor
+            ;;
+		9)  clear
 			exit
 			;;
 		*)  clear
