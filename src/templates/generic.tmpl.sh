@@ -15,6 +15,7 @@ term_colors() {
         YELLOW=$(printf '\033[33m')
         BLUE=$(printf '\033[34m')
         ORANGE=$(printf '\033[38;5;208m')
+        export ORANGE
         BOLD=$(printf '\033[1m')
         RESET=$(printf '\033[0m')
         CLEAR_LINE=$(tput el)
@@ -38,9 +39,12 @@ term_colors
 print_message() {
     local option=${1}
     local text=${2}
-    local terminal_width=$(tput cols)
-    local max_chars=$((terminal_width - 8))
-    local truncated_text=$(truncate_text "$text" $max_chars)
+    local terminal_width
+    terminal_width=$(tput cols)
+    local max_chars
+    max_chars=$((terminal_width - 8))
+    local truncated_text
+    truncated_text=$(truncate_text "$text" $max_chars)
 
     local border_sym=$' '
     local info_sym=$'i'
@@ -96,7 +100,7 @@ print_message() {
             ;;
     esac
 
-    printf "\r${format}${CLEAR_LINE}" "${truncated_text}${preserved_chars}"
+    printf "${format}" "${truncated_text}${preserved_chars}"
 }
 
 
@@ -106,7 +110,7 @@ truncate_text() {
     local max_chars="$2"
     local ellipsis="..."
 
-    if [ ${#text} -gt $max_chars ]; then
+    if [ ${#text} -gt "$max_chars" ]; then
         echo -n "${text:0:$max_chars}${ellipsis}"
     else
         echo -n "$text"
@@ -124,14 +128,22 @@ function get_date_time() {
 # Usage example 2: thisvar=$(get_os release)
 function get_os() {
 	if [[ $(command -v lsb_release) ]] >/dev/null 2>&1; then
-        local codename=$(lsb_release -c --short)
-        local release=$(lsb_release -r --short)
-        local dist=$(lsb_release -d --short)
-        local distid=$(lsb_release -i --short)
-        local arch=$(uname -m)
-        local dpkg_arch=$(dpkg --print-architecture)
-        local check_cpu=$(cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d':' -f2 | xargs)
-        local check_model=$(cat /proc/cpuinfo | grep Model | head -1 | cut -d':' -f2 | xargs)
+        local codename
+        codename=$(lsb_release -c --short)
+        local release
+        release=$(lsb_release -r --short)
+        local dist
+        dist=$(lsb_release -d --short)
+        local distid
+        distid=$(lsb_release -i --short)
+        local arch
+        arch=$(uname -m)
+        local dpkg_arch
+        dpkg_arch=$(dpkg --print-architecture)
+        local check_cpu
+        check_cpu=$(grep 'model name' /proc/cpuinfo | head -1 | cut -d':' -f2 | xargs)
+        local check_model
+        check_model=$(grep Model /proc/cpuinfo | head -1 | cut -d':' -f2 | xargs)
         if [[ -z "${check_cpu}" ]]; then
             local hardware="${check_model}"
         else
@@ -141,25 +153,25 @@ function get_os() {
         case ${1} in
             
             codename)
-                echo -ne ${codename}
+                echo -ne "${codename}"
             ;;
             release)
-                echo -ne ${release}
+                echo -ne "${release}"
             ;;
             dist)
-                echo -ne ${distro}
+                echo -ne "${dist}"
             ;;
             distid)
-                echo -ne ${distid}
+                echo -ne "${distid}"
             ;;
             arch)
-                echo -ne ${arch}
+                echo -ne "${arch}"
             ;;
             dpkg_arch)
-                echo -ne ${dpkg_arch}
+                echo -ne "${dpkg_arch}"
             ;;
             hardware)
-                echo -ne ${hardware}
+                echo -ne "${hardware}"
             ;;
             summary)
                 print_message INFO "OS Detected: ${dist} ${arch}"
@@ -169,8 +181,10 @@ function get_os() {
             ;;
         esac
     elif [[ $(sysctl -n machdep.cpu.brand_string) ]] >/dev/null 2>&1; then
-        local hardware=$(sysctl -n machdep.cpu.brand_string | xargs)
-        local dist=$(sw_vers -productVersion | xargs)
+        local hardware
+        hardware=$(sysctl -n machdep.cpu.brand_string | xargs)
+        local dist
+        dist=$(sw_vers -productVersion | xargs)
             case ${1} in
                 summary)
                 print_message INFO "OS Detected: macOS ${dist} ${arch}"
@@ -226,7 +240,7 @@ function check_superuser() {
 function get_user() {
     if [[ $(command -v logname) ]] >/dev/null 2>&1; then
         echo -ne "$(logname)"
-    elif [[ ! -z ${SUDO_USER} ]]; then
+    elif [[ -n ${SUDO_USER} ]]; then
         echo -ne "${SUDO_USER}"
     elif [[ $(command -v whoami) ]] >/dev/null 2>&1; then
         echo -ne "$(whoami)"
@@ -308,7 +322,7 @@ function write_config_file() {
     local filename=${2}
     local content=${1}
     print_message INFO "Writing config file ${filename}..."  
-    cat > ${filename} << EOL
+    cat > "${filename}" << EOL
 ${content}
 EOL
 }
@@ -321,12 +335,12 @@ function file_hash(){
     local filename=${2}
     case "${option}" in
         all) print_message INFO "File hash values for ${filename}..."
-            echo -e "   MD5 $(md5sum ${filename} | cut -d ' ' -f 1)"
-            echo -e "  SHA1 $(sha1sum ${filename} | cut -d ' ' -f 1)"
-            echo -e "SHA256 $(sha256sum ${filename} | cut -d ' ' -f 1)\n";;
-        md5) echo -ne "$(md5sum ${filename} | cut -d ' ' -f 1)";;
-        sha1) echo -ne "$(sha1sum ${filename} | cut -d ' ' -f 1)";;
-        sha256) "SHA256 $(sha256sum ${filename} | cut -d ' ' -f 1)\n";;
+            echo -e "   MD5 $(md5sum "${filename}" | cut -d ' ' -f 1)"
+            echo -e "  SHA1 $(sha1sum "${filename}" | cut -d ' ' -f 1)"
+            echo -e "SHA256 $(sha256sum "${filename}" | cut -d ' ' -f 1)\n";;
+        md5) echo -ne "$(md5sum "${filename}" | cut -d ' ' -f 1)";;
+        sha1) echo -ne "$(sha1sum "${filename}" | cut -d ' ' -f 1)";;
+        sha256) "SHA256 $(sha256sum "${filename}" | cut -d ' ' -f 1)\n";;
         *) print_message FAIL "Invalid function usage.";;
     esac
 }
@@ -335,7 +349,8 @@ function file_hash(){
 function custom_curl_progress() {
   local downloaded=$2
   local total=$3
-  local percentage=$(echo "scale=2; $downloaded * 100 / $total" | bc)
+  local percentage
+  percentage=$(echo "scale=2; $downloaded * 100 / $total" | bc)
   echo -ne "Progress: ${downloaded}/${total} (${percentage}%)  \r"
 }
 
@@ -379,7 +394,7 @@ function download_file() {
             fi
         fi
     fi
-    file_hash all ${dst_file}
+    file_hash all "${dst_file}"
 }
 
 
@@ -400,7 +415,8 @@ function download_content() {
 	local src_url=${1}
 	print_message INFO "Downloading required plain text content..."
     print_message INFO "Source: ${src_url}"
-	if output=$(wget -qO- ${src_url} 1> /dev/null); then
+	local output
+	if output=$(wget -qO- "${src_url}" 1> /dev/null); then
 		echo "${output}"
 	else
 		print_message FAIL "Unable to fetch content."

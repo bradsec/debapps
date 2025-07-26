@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_SOURCE="passwordapps.sh"
+SCRIPT_SOURCE="$(basename -- "$0")"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 #### START OF REQUIRED INFORMATION FOR IMPORTING BASH TEMPLATES ###
@@ -11,17 +11,20 @@ import_templates() {
   local templates_remote="https://raw.githubusercontent.com/bradsec/debapps/main/src/templates/"
   # Set templates_local to relative path to clone repo. Different from debapps.sh
   local templates_local="${SCRIPT_DIR}/templates/"
-  for tmpl in ${TEMPLATES_REQUIRED[@]}; do
+  for tmpl in "${TEMPLATES_REQUIRED[@]}"; do
     if [[ -f "${templates_local}${tmpl}" ]]; then
+      # shellcheck disable=SC1090
       source "${templates_local}${tmpl}" || echo -e "An error occurred in template import."
     else
       local remote_template="${templates_remote}${tmpl}"
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
-        local tmp_template_file=$(mktemp)
+        local tmp_template_file
+        tmp_template_file=$(mktemp)
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
+        # shellcheck disable=SC1090
         source "${tmp_template_file}" || echo -e "An error occurred in template import."
         rm "${tmp_template_file}"
       else
@@ -33,6 +36,7 @@ import_templates() {
 }
 
 import_templates
+# shellcheck disable=SC2154 # Variables from sourced templates
 print_message PASS "${SCRIPT_SOURCE} active."
 ### END OF REQUIRED FUNCTION ###
 
@@ -47,14 +51,18 @@ function install_opt_app() {
 	pkgmgr install curl wget
     # If available or required (Ubuntu) install
     pkgmgr install libfuse2
-	pkgmgr remove ${app}
+	pkgmgr remove "${app}"
     if [[ "${app}" == "bitwarden" ]]; then
-        local latest_release=$(curl -s "https://github.com/bitwarden/clients/releases/" | grep -o '<a[^>]*href="/bitwarden/clients/releases/tag/desktop-v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
-        local version_number=$(echo "${latest_release}" | sed -E 's/.*desktop-v([0-9.]+)$/\1/' | tr -d '[:space:]')
+        local latest_release
+        latest_release=$(curl -s "https://github.com/bitwarden/clients/releases/" | grep -o '<a[^>]*href="/bitwarden/clients/releases/tag/desktop-v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
+        local version_number
+        version_number=$(echo "${latest_release}" | sed -E 's/.*desktop-v([0-9.]+)$/\1/' | tr -d '[:space:]')
         local from_url="https://github.com/bitwarden/clients/releases/download/desktop-v${version_number}/Bitwarden-${version_number}-x86_64.AppImage"
     elif [[ "${app}" == "keepassxc" ]]; then
-        local latest_release=$(curl -s "https://github.com/keepassxreboot/keepassxc/releases" | grep -o '<a[^>]*href="/keepassxreboot/keepassxc/releases/tag/[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
-        local version_number=$(echo "${latest_release}" | sed -E 's/.*\/tag\/([0-9.]+)$/\1/' | tr -d '[:space:]')
+        local latest_release
+        latest_release=$(curl -s "https://github.com/keepassxreboot/keepassxc/releases" | grep -o '<a[^>]*href="/keepassxreboot/keepassxc/releases/tag/[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
+        local version_number
+        version_number=$(echo "${latest_release}" | sed -E 's/.*\/tag\/([0-9.]+)$/\1/' | tr -d '[:space:]')
         local from_url="https://github.com/keepassxreboot/keepassxc/releases/download/${version_number}/KeePassXC-${version_number}-x86_64.AppImage"
     fi
 
@@ -66,9 +74,10 @@ function install_opt_app() {
     fi
 
     local appimage_save_file="/opt/${app}/${app}.AppImage"
+    # shellcheck disable=SC2154 # version_number defined in conditional blocks above
     print_message INFO "Found ${app} version: ${version_number}"
-    download_file ${appimage_save_file} ${from_url}
-    setup_app_image ${appimage_save_file}
+    download_file "${appimage_save_file}" "${from_url}"
+    setup_app_image "${appimage_save_file}"
 }
 
 function remove_opt_app() {
@@ -93,7 +102,7 @@ function display_menu () {
 
     while :
     do
-        read choice </dev/tty
+        read -r choice </dev/tty
         case $choice in
         1)  clear
             install_opt_app bitwarden

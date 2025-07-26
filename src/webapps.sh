@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_SOURCE="webapps.sh"
+SCRIPT_SOURCE="$(basename -- "$0")"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 #### START OF REQUIRED INFORMATION FOR IMPORTING BASH TEMPLATES ###
@@ -11,17 +11,20 @@ import_templates() {
   local templates_remote="https://raw.githubusercontent.com/bradsec/debapps/main/src/templates/"
   # Set templates_local to relative path to clone repo. Different from debapps.sh
   local templates_local="${SCRIPT_DIR}/templates/"
-  for tmpl in ${TEMPLATES_REQUIRED[@]}; do
+  for tmpl in "${TEMPLATES_REQUIRED[@]}"; do
     if [[ -f "${templates_local}${tmpl}" ]]; then
+      # shellcheck disable=SC1090
       source "${templates_local}${tmpl}" || echo -e "An error occurred in template import."
     else
       local remote_template="${templates_remote}${tmpl}"
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
-        local tmp_template_file=$(mktemp)
+        local tmp_template_file
+        tmp_template_file=$(mktemp)
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
+        # shellcheck disable=SC1090
         source "${tmp_template_file}" || echo -e "An error occurred in template import."
         rm "${tmp_template_file}"
       else
@@ -33,6 +36,7 @@ import_templates() {
 }
 
 import_templates
+# shellcheck disable=SC2154 # Variables from sourced templates
 print_message PASS "${SCRIPT_SOURCE} active."
 ### END OF REQUIRED FUNCTION ###
 
@@ -87,14 +91,16 @@ function install_tor_browser(){
 	grep linux | sed -r 's/.*href="([^"]+).*/\1/g' | awk 'NR==1')"
 	local from_url="${tor_link}"
 	local save_file="/tmp/torbrowser.tar.xz"
-	download_file ${save_file} ${from_url}
-	run_command tar -xvJf ${save_file} --directory /opt/
+	download_file "${save_file}" "${from_url}"
+	run_command tar -xvJf "${save_file}" --directory /opt/
+	local pkg_path
+	# shellcheck disable=SC2010 # Using ls|grep for directory matching
 	pkg_path="/opt/$(ls /opt/ | grep tor-browser)"
-	run_command chown -R $(get_user):$(get_user) ${pkg_path}
-	run_command chmod 755 ${pkg_path}/start-tor-browser.desktop
-	run_command ln -sf ${pkg_path}/start-tor-browser.desktop /usr/sbin/tor-browser
-	run_command cd ${pkg_path}
-	su -c './start-tor-browser.desktop --register-app' $(logname) >/dev/null 2>&1
+	run_command chown -R "$(get_user):$(get_user)" "${pkg_path}"
+	run_command chmod 755 "${pkg_path}/start-tor-browser.desktop"
+	run_command ln -sf "${pkg_path}/start-tor-browser.desktop" /usr/sbin/tor-browser
+	run_command cd "${pkg_path}"
+	su -c './start-tor-browser.desktop --register-app' "$(logname)" >/dev/null 2>&1
 	print_message DONE "Tor-Browser installed."
 }
 
@@ -103,8 +109,8 @@ function install_chrome() {
 	pkgmgr remove google-chrome-stable
 	from_url="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
 	save_file="/tmp/chrome.deb"
-	download_file ${save_file} ${from_url}
-	pkgmgr install ${save_file}
+	download_file "${save_file}" "${from_url}"
+	pkgmgr install "${save_file}"
 	print_message DONE "Chrome installed."
 }
 
@@ -113,9 +119,9 @@ function install_postman() {
 	# Download latest linux 64 version
 	local from_url="https://dl.pstmn.io/download/latest/linux64"
 	local save_file="/tmp/postman.tar.gz"
-	download_file ${save_file} ${from_url}
+	download_file "${save_file}" "${from_url}"
     # Extract files to /opt/
-    run_command tar -xvf ${save_file} --directory /opt/
+    run_command tar -xvf "${save_file}" --directory /opt/
     run_command sudo ln -sf /opt/Postman/Postman /usr/sbin/postman
     # Write desktop icon configuration file
 	local postman_config="[Desktop Entry]
@@ -132,13 +138,13 @@ function install_postman() {
 	StartupWMClass=Postman
 	StartupNotify=true"
     write_config_file "${postman_config}" "/usr/share/applications/postman.desktop"
-    run_command rm ${save_file}
+    run_command rm "${save_file}"
 	print_message DONE "Postman installed."
 }
 
 
-function display_menu () {
-	echo
+function display_menu() {
+    echo
     echo -e " =============="                         
     echo -e "  Menu Options "
     echo -e " ==============\n"
@@ -157,7 +163,7 @@ function display_menu () {
 
     while :
     do
-        read choice </dev/tty
+        read -r choice </dev/tty
         case $choice in
         1)  clear
             install_firefox
@@ -176,41 +182,53 @@ function display_menu () {
             ;;
         6)  clear
             pkgmgr remove firefox
-			run_command sudo apt -y update
-			run_command rm -f /etc/apt/sources.list.d/mozilla.list
-			run_command sudo apt -y update
-			pkgmgr cleanup
+            run_command sudo apt -y update
+            run_command rm -f /etc/apt/sources.list.d/mozilla.list
+            run_command sudo apt -y update
+            pkgmgr cleanup
             ;;
         7)  clear
             pkgmgr remove google-chrome-stable
-			run_command sudo apt -y update
-			pkgmgr cleanup
+            run_command sudo apt -y update
+            pkgmgr cleanup
             ;;
         8)  clear
             pkgmgr remove brave-browser
-			run_command rm -f /etc/apt/sources.list.d/brave-browser*
-			run_command sudo apt -y update
-			pkgmgr cleanup
+            run_command rm -f /etc/apt/sources.list.d/brave-browser*
+            run_command sudo apt -y update
+            pkgmgr cleanup
             ;;
-		9)  clear
+        9)  clear
             remove_opt_app tor-browser
             ;;
-		10)  clear
+        10) clear
             remove_opt_app Postman
-			message USER "Remove local user Postman files /$(get_user)/Postman"
-			wait_for user_continue
-			run_command rm -rf /$(get_user)/Postman
+            local user_name
+            user_name=$(get_user)
+            # Validate user name to prevent path injection
+            if [[ -n "$user_name" && "$user_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+                local postman_user_dir="/home/${user_name}/Postman"
+                message USER "Remove local user Postman files ${postman_user_dir}"
+                wait_for user_continue
+                if [[ -d "$postman_user_dir" ]]; then
+                    run_command rm -rf "$postman_user_dir"
+                else
+                    print_message INFO "Postman user directory not found: ${postman_user_dir}"
+                fi
+            else
+                print_message FAIL "Invalid user name detected, cannot safely remove user files"
+            fi
             ;;
         11) clear
             exit
             ;;
-		*)  clear
-			main
+        *)  clear
+            main
             ;;
         esac
-		pkgchk
-		print_message DONE "Selection [${choice}] completed."
-		wait_for user_anykey
+        pkgchk
+        print_message DONE "Selection [${choice}] completed."
+        wait_for user_anykey
         clear
         main
     done

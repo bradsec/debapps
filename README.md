@@ -5,19 +5,38 @@
 - Includes menu options to both installing and also removing the applications.
 
 ### USAGE
-Option 1. (Quick) Copy and paste the one line terminal command below:
+
+⚠️ **SECURITY WARNING**: Remote script execution methods (Options 1 and 3 below) download and execute code with root privileges. This poses significant security risks. Always review scripts before execution.
+
+Option 1. **(NOT RECOMMENDED - SECURITY RISK)** Remote execution:
 ```
+# WARNING: This downloads and executes remote code with sudo privileges
+# Only use if you trust the source and have verified the script content
 sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main/debapps.sh)"
 ```
-Option 2. Clone the repo and run the required script on the local machine.
+
+Option 2. **(RECOMMENDED)** Clone the repo and run locally:
 ```terminal
+# Download and review the code first
 git clone https://github.com/bradsec/debapps.git
-sudo bash ./debapps/passwordapps.sh
+# Review the script content before execution
+less ./debapps/debapps.sh
+# Run the script
+sudo bash ./debapps/debapps.sh
 ```
-Option 3. Alternatively run the required specific application script remotely. 
+
+Option 3. **(NOT RECOMMENDED - SECURITY RISK)** Remote execution of specific scripts:
 ```
+# WARNING: This downloads and executes remote code with sudo privileges
+# Only use if you trust the source and have verified the script content
 sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/bradsec/debapps/main/src/passwordapps.sh)"
 ```
+
+**Security Best Practices:**
+- Always review script contents before execution
+- Use Option 2 (local clone) whenever possible
+- Verify file hashes when provided
+- Run scripts in a test environment first
 
 ### Example of main menu:
 ```terminal

@@ -86,14 +86,17 @@ function pkgmgr() {
             ;;
             find)
                 if [[ $(sudo apt-cache search --names-only "^${pkg}$" | wc -l) == "1" ]]; then
+                    local pkg_match
                     pkg_match=$(sudo dpkg --get-selections | grep "^${pkg}" | awk '{print $1}')
-                    echo -ne ${pkg_match}
+                    echo -ne "${pkg_match}"
                 fi
             ;;
             size)
-                if [[ $(sudo apt-cache --no-all-versions show ${pkg} | grep '^Size: ' | wc -l) == "1" ]]; then
-                    pkg_raw_size=$(sudo apt-cache --no-all-versions show ${pkg} | grep '^Size: ' | awk '{print $2}')
-                    pkg_size="$(echo ${pkg_raw_size} | numfmt --to=iec)"
+                if [[ $(sudo apt-cache --no-all-versions show "${pkg}" | grep -c '^Size: ') == "1" ]]; then
+                    local pkg_raw_size
+                    pkg_raw_size=$(sudo apt-cache --no-all-versions show "${pkg}" | grep '^Size: ' | awk '{print $2}')
+                    local pkg_size
+                    pkg_size="$(echo "${pkg_raw_size}" | numfmt --to=iec)"
                     print_message INFO "The installation size of package ${pkg} is ${pkg_size}."
                 fi
             ;;
@@ -132,12 +135,17 @@ function add_apt_source() {
 	repo_source=${3}
     repo_arch=${4}
     # If custom repo_arch is not set get system arch using dpkg --print-architecture
-    [[ -z "${repo_arch}" ]] && os_arch="$(dpkg --print-architecture)" || os_arch="${4}"
+    local os_arch
+    if [[ -z "${repo_arch}" ]]; then
+        os_arch="$(dpkg --print-architecture)"
+    else
+        os_arch="${4}"
+    fi
 	print_message INFO "Adding repo apt source..."
     print_message INFO "SRC-FILE: /etc/apt/sources.list.d/${repo_list_file}"
     print_message INFO "SRC-TEXT: deb [arch=${os_arch} signed-by=/usr/share/keyrings/${repo_key}-keyring.gpg] ${repo_source}"
 	echo "deb [arch=${os_arch} signed-by=/usr/share/keyrings/${repo_key}-keyring.gpg] ${repo_source}" \
-	| sudo tee /etc/apt/sources.list.d/${repo_list_file} &>/dev/null
+	| sudo tee "/etc/apt/sources.list.d/${repo_list_file}" &>/dev/null
 }
 
 # Fetch repo signing key, determine if ascii-armored, write key to /usr/share/keyrings/${key_name}-archive-keyring.gpg
@@ -150,7 +158,7 @@ function fetch_signing_key() {
 	key_src=${2}
     # Check if key exists
     print_message TASK "Checking apt source signing key link available..."
-    if [[ $(wget -S --spider ${key_src} 2>&1 | grep 'HTTP/1.1 200 OK') ]]; then
+    if wget -S --spider "${key_src}" 2>&1 | grep -q 'HTTP/1.1 200 OK'; then
         print_message PASS
     else
         print_message FAIL
@@ -160,18 +168,18 @@ function fetch_signing_key() {
 	print_message INFO "Fetching package signing key..."
     print_message INFO "SRC: ${key_src}"
 	# Must be run without run_command or supressing output.
-    wget -qO- ${key_src} > /tmp/${key_name}
+    wget -qO- "${key_src}" > "/tmp/${key_name}"
 	# If key is ascii-armored use gpg --deamor.
 	if [[ $(file "/tmp/${key_name}") == *"Public-Key (old)"* ]] &>/dev/null; then
         print_message INFO "Running gpg --dearmor and adding to keyrings..."
         print_message INFO "DEST: /usr/share/keyrings/${key_name}-keyring.gpg"
-		cat /tmp/${key_name} | gpg --dearmor | tee /usr/share/keyrings/${key_name}-keyring.gpg &>/dev/null
+		gpg --dearmor < "/tmp/${key_name}" | tee "/usr/share/keyrings/${key_name}-keyring.gpg" &>/dev/null
 	else
         print_message INFO "No dearmor required. Adding to keyrings..."
         print_message INFO "DEST: /usr/share/keyrings/${key_name}-keyring.gpg"
-		cp /tmp/${key_name} /usr/share/keyrings/${key_name}-keyring.gpg &>/dev/null
+		cp "/tmp/${key_name}" "/usr/share/keyrings/${key_name}-keyring.gpg" &>/dev/null
 	fi
-	rm /tmp/${key_name} &>/dev/null
+	rm "/tmp/${key_name}" &>/dev/null
 }
 
 # Fetch repo signing key from keyserver
@@ -183,8 +191,8 @@ function fetch_keyserver_signing_key() {
 	key_server=${2}
 	key_fingerprint=${3}
 	print_message INFO "Fetching package signing key from keyserver..."
-	gpg --no-default-keyring --keyring /usr/share/keyrings/${key_name}-keyring.gpg \
-	--keyserver ${key_server} --recv-keys ${key_fingerprint}
+	gpg --no-default-keyring --keyring "/usr/share/keyrings/${key_name}-keyring.gpg" \
+	--keyserver "${key_server}" --recv-keys "${key_fingerprint}"
 }
 
 print_message PASS "${TEMPLATE_NAME} imported."
