@@ -4,6 +4,9 @@
 - These scripts will work with most Debian based Linux distros such as Ubuntu, Kali and Pop!_OS.
 - Includes menu options to both installing and also removing the applications.
 
+### Note Debian 13 issues:
+- Some issues experienced with some of the applications which pull AppImages and Debian 13 (Trixie). They don't seem to run after installing. May need to use FlatPak version of application.
+
 ### USAGE
 
 Option 1. Quick run remote
