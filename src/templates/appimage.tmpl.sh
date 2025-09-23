@@ -9,7 +9,7 @@ TEMPLATE_NAME="templates/appimage.tmpl.sh"
 function get_user() {
     if [[ $(command -v logname) ]] >/dev/null 2>&1; then
         echo -ne "$(logname)"
-    elif [[ -n ${SUDO_USER} ]]; then
+    elif [[ -n "${SUDO_USER}" ]]; then
         echo -ne "${SUDO_USER}"
     elif [[ $(command -v whoami) ]] >/dev/null 2>&1; then
         echo -ne "$(whoami)"
@@ -20,7 +20,7 @@ function get_user() {
 
 setup_app_image() {
     local app_image_path
-    app_image_path=$(readlink -f "$1")
+    app_image_path="$(readlink -f "$1")"
 
     if [[ -f "${app_image_path}" ]]; then
         print_message INFO "Setup AppImage: ${app_image_path}"
@@ -34,18 +34,18 @@ setup_app_image() {
 
     # Extract the base name of the image file
     local app_image_filename
-    app_image_filename=$(basename "${app_image_path}")
+    app_image_filename="$(basename "${app_image_path}")"
 
     # Remove the extension from the app_image_basename
     local app_image_name="${app_image_filename%.*}"
 
     # Convert the app_image_basename_no_ext to lowercase
     local app_image_name_lower
-    app_image_name_lower=$(echo "${app_image_name}" | tr '[:upper:]' '[:lower:]')
+    app_image_name_lower="$(echo "${app_image_name}" | tr '[:upper:]' '[:lower:]')"
 
     # Get app image directory
     local app_image_dir
-    app_image_dir=$(dirname "${app_image_path}")
+    app_image_dir="$(dirname "${app_image_path}")"
 
     # Install log file to help with removal
     local install_log_file="${app_image_dir}/install.log"
@@ -55,7 +55,9 @@ setup_app_image() {
 
     # Set permissions and ownership and symbolic link
     run_command chmod 755 "${app_image_path}"
-    run_command chown -R "$(get_user):$(get_user)" "${app_image_dir}"
+    local current_user
+    current_user="$(get_user)"
+    run_command chown -R "${current_user}:${current_user}" "${app_image_dir}"
 
     if [[ -z ${app_image_name_lower} ]]; then
         print_message FAIL "Unable get app image name for symbolic link."

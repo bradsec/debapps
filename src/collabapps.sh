@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -42,19 +42,19 @@ print_message PASS "${SCRIPT_SOURCE} active."
 
 function install_discord() {
 	print_message INFO "Installing Discord..."
-	from_url="https://discord.com/api/download?platform=linux&format=deb"
-	save_file="/tmp/discord.deb"
+	local from_url="https://discord.com/api/download?platform=linux&format=deb"
+	local save_file="/tmp/discord.deb"
 	download_file "${save_file}" "${from_url}"
-	pkgmgr install ${save_file}
+	pkgmgr install "${save_file}"
 	pkgmgr fix
 }
 
 function install_zoom() {
 	print_message INFO "Installing Zoom..."
-	from_url="https://zoom.us/client/latest/zoom_amd64.deb"
-	save_file="/tmp/zoom.deb"
+	local from_url="https://zoom.us/client/latest/zoom_amd64.deb"
+	local save_file="/tmp/zoom.deb"
 	download_file "${save_file}" "${from_url}"
-	pkgmgr install ${save_file}
+	pkgmgr install "${save_file}"
 	pkgmgr fix
 }
 
@@ -64,10 +64,10 @@ function install_slack() {
 	print_message INFO "Fetching latest Slack .deb package..."
 	local slack_version
 	slack_version="$(curl -sL https://slack.com/downloads/linux | sed -n 's/.*<span class="page-downloads__hero__meta-text__version">Version \([^<]\+\)<\/span>.*/\1/p')"
-	from_url="https://downloads.slack-edge.com/releases/linux/${slack_version}/prod/x64/slack-desktop-${slack_version}-amd64.deb"
-	save_file="/tmp/slack.deb"
+	local from_url="https://downloads.slack-edge.com/releases/linux/${slack_version}/prod/x64/slack-desktop-${slack_version}-amd64.deb"
+	local save_file="/tmp/slack.deb"
 	download_file "${save_file}" "${from_url}"
-	pkgmgr install ${save_file}
+	pkgmgr install "${save_file}"
 	pkgmgr fix
 }
 
@@ -89,7 +89,7 @@ function display_menu () {
     while :
     do
 		read -r choice </dev/tty
-		case ${choice} in
+		case "${choice}" in
 		1)  clear
 			pkgmgr remove discord
 			install_discord
@@ -115,14 +115,15 @@ function display_menu () {
 			exit
 			;;
 		*)  clear
-			main
+			print_message WARN "Invalid option. Please select 1-7."
+			continue
             ;;
 		esac
 		pkgchk
 		print_message DONE "\nSelection [${choice}] completed."
 		wait_for user_anykey
 		clear
-		main
+		return
     done
 }
 

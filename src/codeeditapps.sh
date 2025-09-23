@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -67,7 +67,7 @@ function install_opt_app() {
     pkgmgr remove "${app}"
     if [[ "${app}" == "cursor" ]]; then
 		local cursor_arch
-		cursor_arch=$(get_arch_for_cursor)
+		cursor_arch="$(get_arch_for_cursor)"
         local from_url="https://downloader.cursor.sh/linux/appImage/${cursor_arch}"
     fi
 
@@ -103,10 +103,11 @@ function install_sublimetext4() {
 
 function install_vscodium() {
     print_message INFO "Installing VSCodium..."
+	local from_url
 	from_url="https://github.com$(curl -s https://github.com/VSCodium/vscodium/releases \
 	| awk -F"[><]" '{for(i=1;i<=NF;i++){if($i ~ /a href=.*\//){print "<" $i ">"}}}' \
 	| grep "$(dpkg --print-architecture)" -A 0 | awk 'NR==1' | sed -r 's/.*href="([^"]+).*/\1/g')"
-	save_file="/tmp/codium.deb"
+	local save_file="/tmp/codium.deb"
 	download_file "${save_file}" "${from_url}"
 	pkgmgr install "${save_file}"
 }
@@ -140,7 +141,7 @@ function display_menu() {
     while :
     do
         read -r choice </dev/tty
-        case ${choice} in
+        case "${choice}" in
         1)  clear
             pkgmgr remove sublime-text
             install_sublimetext4
@@ -174,14 +175,15 @@ function display_menu() {
             exit
             ;;
         *)  clear
-            main
+            print_message WARN "Invalid option. Please select 1-9."
+            continue
             ;;
         esac
 		pkgchk
 		print_message DONE "\nSelection [${choice}] completed."
 		wait_for user_anykey
 		clear
-		main
+		return
     done
 }
 

@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -48,27 +48,27 @@ function install_opt_app() {
 	# Update packages and install required packages
 	print_message INFO "Checking for required packages..."
 	run_command sudo apt -y update
-	pkgmgr install curl wget
+	pkgmgr install "curl" "wget"
     # If available or required (Ubuntu) install
     pkgmgr install libfuse2
 	pkgmgr remove "${app}"
     if [[ "${app}" == "joplin" ]]; then
 	local latest_release
-	latest_release=$(curl -s "https://github.com/laurent22/joplin/releases" | grep -o '<a[^>]*href="/laurent22/joplin/releases/tag/v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
+	latest_release="$(curl -s "https://github.com/laurent22/joplin/releases" | grep -o '<a[^>]*href="/laurent22/joplin/releases/tag/v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')"
 	local version_number
-	version_number=$(echo "${latest_release}" | sed -E 's/.*v([0-9.]+)$/\1/' | tr -d '[:space:]')
+	version_number="$(echo "${latest_release}" | sed -E 's/.*v([0-9.]+)$/\1/' | tr -d '[:space:]')"
 	local from_url="https://github.com/laurent22/joplin/releases/download/v${version_number}/Joplin-${version_number}.AppImage"
     elif [[ "${app}" == "standardnotes" ]]; then
 	local latest_release
-	latest_release=$(curl -s "https://github.com/standardnotes/app/releases" | grep -o '<a[^>]*href="/standardnotes/app/releases/tag/%40standardnotes%2Fdesktop[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
+	latest_release="$(curl -s "https://github.com/standardnotes/app/releases" | grep -o '<a[^>]*href="/standardnotes/app/releases/tag/%40standardnotes%2Fdesktop[^"]*"' | head -n 1 | awk -F '"' '{print $2}')"
 	local version_number
-	version_number=$(echo "${latest_release}" | sed -E 's/.*%40([0-9.]+)$/\1/' | tr -d '[:space:]')
+	version_number="$(echo "${latest_release}" | sed -E 's/.*%40([0-9.]+)$/\1/' | tr -d '[:space:]')"
 	local from_url="https://github.com/standardnotes/app/releases/download/%40standardnotes%2Fdesktop%40${version_number}/standard-notes-${version_number}-linux-x86_64.AppImage"
     elif [[ "${app}" == "obsidian" ]]; then
 	local latest_release
-	latest_release=$(curl -s "https://github.com/obsidianmd/obsidian-releases/releases" | grep -o '<a[^>]*href="/obsidianmd/obsidian-releases/releases/tag/v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')
+	latest_release="$(curl -s "https://github.com/obsidianmd/obsidian-releases/releases" | grep -o '<a[^>]*href="/obsidianmd/obsidian-releases/releases/tag/v[^"]*"' | head -n 1 | awk -F '"' '{print $2}')"
 	local version_number
-	version_number=$(echo "${latest_release}" | sed -E 's/.*v([0-9.]+)$/\1/' | tr -d '[:space:]')
+	version_number="$(echo "${latest_release}" | sed -E 's/.*v([0-9.]+)$/\1/' | tr -d '[:space:]')"
 	local from_url="https://github.com/obsidianmd/obsidian-releases/releases/download/v${version_number}/Obsidian-${version_number}.AppImage"
     fi
 
@@ -110,7 +110,7 @@ function display_menu () {
     while :
     do
         read -r choice </dev/tty
-        case $choice in
+        case "$choice" in
         1)  clear
             install_opt_app joplin
             ;;
@@ -133,14 +133,15 @@ function display_menu () {
             exit
             ;;
 		*)  clear
-			main
+			print_message WARN "Invalid option. Please select 1-7."
+			continue
             ;;
         esac
         pkgchk
         print_message DONE "Selection [${choice}] completed."
 		wait_for user_anykey
         clear
-        main
+        return
     done
 }
 

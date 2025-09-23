@@ -340,7 +340,7 @@ function file_hash(){
             echo -e "SHA256 $(sha256sum "${filename}" | cut -d ' ' -f 1)\n";;
         md5) echo -ne "$(md5sum "${filename}" | cut -d ' ' -f 1)";;
         sha1) echo -ne "$(sha1sum "${filename}" | cut -d ' ' -f 1)";;
-        sha256) "SHA256 $(sha256sum "${filename}" | cut -d ' ' -f 1)\n";;
+        sha256) echo -ne "$(sha256sum "${filename}" | cut -d ' ' -f 1)";;
         *) print_message FAIL "Invalid function usage.";;
     esac
 }

@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -46,9 +46,10 @@ function install_burp() {
 	print_message WARN "Downloads for BurpSuite products are approximately 240MB in size."
     wait_for user_continue
 	print_message INFO "Fetching latest release..."
+	local burp_release
 	burp_release="$(curl -Ls -o /dev/null -w '%{url_effective}' https://portswigger.net/burp/releases/community/latest | grep -Po '(?-)\d+' | sed -z 's/\n/./;s/\n/./;s/\n//')"
-	from_url="https://portswigger-cdn.net/burp/releases/download?product=${burp_product}&version=${burp_release}&type=Linux"
-	save_file="/tmp/burp${burp_product}.sh"
+	local from_url="https://portswigger-cdn.net/burp/releases/download?product=${burp_product}&version=${burp_release}&type=Linux"
+	local save_file="/tmp/burp${burp_product}.sh"
 	download_file "${save_file}" "${from_url}"
 	run_command chmod +x "${save_file}"
 	run_command "${save_file}"
@@ -57,7 +58,9 @@ function install_burp() {
 function remove_burp() {
     burp_product=${1}
 	print_message INFO "Removing BurpSuite ${burp_product^}..."
-	user_prompt=$(message USER "Set BurpSuite install location or enter to use default [/opt/BurpSuite${burp_product^}]: ")
+	local user_prompt
+	user_prompt="$(message USER "Set BurpSuite install location or enter to use default [/opt/BurpSuite${burp_product^}]: ")"
+	local app_path
 	read -r -p "${user_prompt}" app_path </dev/tty
 	app_path=${app_path:-/opt/BurpSuite${burp_product^}}
 	print_message INFO "Running uninstall in ${app_path}..."
@@ -80,7 +83,7 @@ function display_menu() {
     while :
     do
         read -r choice </dev/tty
-        case ${choice} in
+        case "${choice}" in
         1)  clear
             install_burp community
             ;;
@@ -97,14 +100,15 @@ function display_menu() {
             exit
             ;;
         *)  clear
-            main
+            print_message WARN "Invalid option. Please select 1-5."
+            continue
             ;;
         esac
         pkgchk
         print_message DONE "\nSelection [${choice}] completed."
         wait_for user_anykey
         clear
-        main
+        return
     done
 }
 

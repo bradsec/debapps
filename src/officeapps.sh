@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -44,10 +44,10 @@ function install_onlyoffice() {
 	print_message INFO "Installing OnlyOffice..."
     print_message WARN "Downloads for OnlyOffice are over 300MB in size."
     wait_for user_continue
-	from_url="https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb"
-	save_file="/tmp/onlyoffice.deb"
-	download_file ${save_file} ${from_url}
-	pkgmgr install ${save_file}
+	local from_url="https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb"
+	local save_file="/tmp/onlyoffice.deb"
+	download_file "${save_file}" "${from_url}"
+	pkgmgr install "${save_file}"
 }
 
 function install_libreoffice() {
@@ -73,7 +73,7 @@ function display_menu () {
     while :
     do
 		read -r choice </dev/tty
-		case ${choice} in
+		case "${choice}" in
 		1)  clear
 			pkgmgr remove onlyoffice-desktopeditors
 			install_onlyoffice
@@ -92,14 +92,15 @@ function display_menu () {
 			exit
 			;;
 		*)  clear
-			main
+			print_message WARN "Invalid option. Please select 1-5."
+			continue
             ;;
 		esac
     pkgchk
 		print_message DONE "\nSelection [${choice}] completed."
 		wait_for user_anykey
 		clear
-		main
+		return
     done
 }
 

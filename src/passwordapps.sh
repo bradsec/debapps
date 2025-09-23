@@ -103,7 +103,7 @@ function display_menu () {
     while :
     do
         read -r choice </dev/tty
-        case $choice in
+        case "$choice" in
         1)  clear
             install_opt_app bitwarden
             ;;
@@ -123,11 +123,14 @@ function display_menu () {
 			main
             ;;
         esac
-        pkgchk
-        print_message DONE "Selection [${choice}] completed."
-		wait_for user_anykey
-        clear
-        main
+        if [[ "${choice}" != "5" ]]; then
+            pkgchk
+            print_message DONE "Selection [${choice}] completed."
+            wait_for user_anykey
+            echo
+            print_message INFO "Returning to password apps menu..."
+            echo
+        fi
     done
 }
 

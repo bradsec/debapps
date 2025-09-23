@@ -83,7 +83,7 @@ function display_menu() {
     while :
     do
         read -r choice </dev/tty
-        case ${choice} in
+        case "${choice}" in
         1)  clear
             print_message INFO "Fetching Password manager application options menu..."
             script_fetch passwordapps.sh
@@ -123,15 +123,21 @@ function display_menu() {
             main
             ;;
         esac
-        clear
-        main
+        if [[ "${choice}" != "9" ]]; then
+            clear
+            print_message INFO "Returning to main menu..."
+            echo
+            break
+        fi
     done
 }
 
 # Main function
 function main() {
     about
-    display_menu
+    while true; do
+        display_menu
+    done
 }
 
 main "${@}"

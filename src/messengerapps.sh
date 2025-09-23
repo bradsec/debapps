@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -51,10 +51,10 @@ function install_signal() {
 
 function install_threema() {
 	print_message INFO "Installing Threema..."
-	from_url="https://releases.threema.ch/web-electron/v1/release/Threema-Latest.deb"
-	save_file="/tmp/threema.deb"
-	download_file ${save_file} ${from_url}
-	pkgmgr install ${save_file}
+	local from_url="https://releases.threema.ch/web-electron/v1/release/Threema-Latest.deb"
+	local save_file="/tmp/threema.deb"
+	download_file "${save_file}" "${from_url}"
+	pkgmgr install "${save_file}"
 }
 
 # Display a list of menu items for selection
@@ -73,7 +73,7 @@ function display_menu () {
     while :
     do
 		read -r choice </dev/tty
-		case ${choice} in
+		case "${choice}" in
 		1)  clear
 			pkgmgr remove signal-desktop
 			run_command rm -f /etc/apt/sources.list.d/signal.list
@@ -96,14 +96,15 @@ function display_menu () {
 			exit
 			;;
 		*)  clear
-			main
+			print_message WARN "Invalid option. Please select 1-5."
+			continue
             ;;
 		esac
 		pkgchk
 		print_message DONE "\nSelection [${choice}] completed."
 		wait_for user_anykey
 		clear
-		main
+		return
     done
 }
 

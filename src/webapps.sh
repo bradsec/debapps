@@ -20,7 +20,7 @@ import_templates() {
       if wget -q --spider "${remote_template}"; then
         # Download the remote template to a temporary file
         local tmp_template_file
-        tmp_template_file=$(mktemp)
+        tmp_template_file="$(mktemp)"
         wget -qO "${tmp_template_file}" "${remote_template}"
         
         # Source the temporary file and then remove it
@@ -87,6 +87,7 @@ function install_brave() {
 function install_tor_browser(){
 	print_message INFOFULL "This will install the latest Tor-Browser version."
 	pkgmgr install curl
+	local tor_link
 	tor_link="https://www.torproject.org$(curl -s https://www.torproject.org/download/ | \
 	grep linux | sed -r 's/.*href="([^"]+).*/\1/g' | awk 'NR==1')"
 	local from_url="${tor_link}"
@@ -107,8 +108,8 @@ function install_tor_browser(){
 function install_chrome() {
 	print_message INFO "Installing Google Chrome..."
 	pkgmgr remove google-chrome-stable
-	from_url="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-	save_file="/tmp/chrome.deb"
+	local from_url="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+	local save_file="/tmp/chrome.deb"
 	download_file "${save_file}" "${from_url}"
 	pkgmgr install "${save_file}"
 	print_message DONE "Chrome installed."
@@ -164,7 +165,7 @@ function display_menu() {
     while :
     do
         read -r choice </dev/tty
-        case $choice in
+        case "$choice" in
         1)  clear
             install_firefox
             ;;
@@ -204,7 +205,7 @@ function display_menu() {
         10) clear
             remove_opt_app Postman
             local user_name
-            user_name=$(get_user)
+            user_name="$(get_user)"
             # Validate user name to prevent path injection
             if [[ -n "$user_name" && "$user_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
                 local postman_user_dir="/home/${user_name}/Postman"
@@ -223,14 +224,15 @@ function display_menu() {
             exit
             ;;
         *)  clear
-            main
+            print_message WARN "Invalid option. Please select 1-11."
+            continue
             ;;
         esac
         pkgchk
         print_message DONE "Selection [${choice}] completed."
         wait_for user_anykey
         clear
-        main
+        return
     done
 }
 
