@@ -1,3 +1,4 @@
+# NO LONGER MAINTAINED. SOME BROKEN SCRIPTS & LINKS. MAY LOOK AT REPLACING WITH A GO CODED VERSION FOR EASIER MAINTAINABILTY.
 
 # debapps - Bash scripts to simplify Debian Linux app installations.
 
