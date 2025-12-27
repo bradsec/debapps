@@ -58,7 +58,8 @@ Choose a category:
 
 ### Messaging
 - Signal - Private messenger with end-to-end encryption
-- Threema - Swiss secure messenger
+- Threema - Swiss secure messenger                              
+- Telegram Desktop - Fast and secure messaging app with cloud sync   
 
 ### Office Suites
 - OnlyOffice - Free office suite compatible with Microsoft Office
@@ -85,6 +86,9 @@ Choose a category:
 ### Security Tools
 - Burp Suite Community - Free web security testing tool
 - Burp Suite Professional - Professional web security testing
+
+### System Tools
+- Docker - Platform for building, running, and shipping applications in containers 
 
 ## Installation
 
