@@ -392,17 +392,17 @@ ui_search_flatpak() {
         return 1
     fi
 
-    gum style \
-        --foreground "$UI_PRIMARY_COLOR" \
-        --border rounded \
-        --border-foreground "$UI_PRIMARY_COLOR" \
-        --padding "1 2" \
-        --margin "1 0" \
-        "Searching Flatpak for ${app_name}..." >&2
-
-    # Search flatpak and parse results
+    # Search flatpak and parse results with spinner
     local search_results
-    search_results=$(flatpak search "$app_name" 2>/dev/null)
+    local temp_file
+    temp_file=$(mktemp)
+
+    # Run search with spinner, output to temp file
+    gum spin --spinner dot --spinner.foreground "83" --title.foreground "83" --title "Searching Flatpak for ${app_name}..." -- sh -c "flatpak search '$app_name' > '$temp_file' 2>/dev/null"
+
+    # Read results from temp file
+    search_results=$(<"$temp_file")
+    rm -f "$temp_file"
 
     if [[ -z "$search_results" ]]; then
         ui_error "No Results" "No Flatpak packages found for '${app_name}'"
