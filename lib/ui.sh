@@ -411,13 +411,13 @@ ui_search_flatpak() {
             --border-foreground "$UI_ERROR_COLOR" \
             --padding "1 2" \
             --margin "1 0" \
-            "[INFO] No Results Found"
+            "[INFO] No Results Found" >&2
 
-        printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages found for '${app_name}'"
+        printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages found for '${app_name}'" >&2
 
-        gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..."
+        gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..." >&2
         read -n 1 -s -r
-        echo
+        echo >&2
         return 1
     fi
 
@@ -475,13 +475,13 @@ ui_search_flatpak() {
             --border-foreground "$UI_ERROR_COLOR" \
             --padding "1 2" \
             --margin "1 0" \
-            "[INFO] No Results Found"
+            "[INFO] No Results Found" >&2
 
-        printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages with versions found for '${app_name}'"
+        printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages with versions found for '${app_name}'" >&2
 
-        gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..."
+        gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..." >&2
         read -n 1 -s -r
-        echo
+        echo >&2
         return 1
     fi
 
