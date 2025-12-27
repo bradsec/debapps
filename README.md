@@ -6,6 +6,33 @@ Simple all in one installation scripts for Debian applications
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Shell](https://img.shields.io/badge/shell-bash-brightgreen)
 
+```terminal
+                                                                          
+                   ____  __________  ___    ____  ____  _____             
+                  / __ \/ ____/ __ )/   |  / __ \/ __ \/ ___/             
+                 / / / / __/ / __  / /| | / /_/ / /_/ /\__ \              
+                / /_/ / /___/ /_/ / ___ |/ ____/ ____/___/ /              
+               /_____/_____/_____/_/  |_/_/   /_/    /____/               
+                                                                          
+                                                                          
+                    Debian Application Installer v2.0                     
+             Bash scripts to simplify Linux app installations                     
+                                                                          
+Choose a category:                                                            
+                                                                              
+> Password Manager Apps - Secure password management applications             
+  Note Apps - Note taking and knowledge management                            
+  Messenger Apps - Secure messaging applications                              
+  Office Apps - Office productivity suites                                    
+  Collaboration Apps - Team communication and video conferencing              
+  Web Browsers and Web API Tools - Web browsers and API development tools     
+  Code Editor Apps - Text editors and integrated development environments     
+  Burp Suite Apps - Web application security testing                          
+  System Apps - System tools and utilities                                    
+  Exit                                                                        
+                                                                                               
+```
+
 ## Features
 
 - **Modern Gum-based UI** with retro CRT green terminal aesthetic
