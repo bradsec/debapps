@@ -1,6 +1,6 @@
 # DEBAPPS - Debian Application Installer
 
-Modern, data-driven application installer with beautiful Gum UI for Debian/Ubuntu systems.
+Simple all in one installation scripts for Debian applications
 
 ![Version](https://img.shields.io/badge/version-2.0-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -428,74 +428,7 @@ rm data/installed-apps.db
 # Enter password when prompted
 ```
 
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Add your application to `config/apps.json`
-4. Test installation and removal
-5. Run `./test-links.sh --quick`
-6. Submit a pull request
-
-### Code Style
-
-- Use `set -euo pipefail` in all scripts
-- Quote all variables: `"${var}"`
-- Validate all inputs
-- Add comments for complex logic
-- Follow existing naming conventions
-- Use `print_message` for user output
 
 ## License
 
 MIT License - see LICENSE file for details
-
-## Credits
-
-- Original author: bradsec
-- UI Framework: [Gum](https://github.com/charmbracelet/gum) by Charm
-- Icons: Various open source projects
-
-## Support
-
-- **Issues:** https://github.com/bradsec/debapps/issues
-- **Discussions:** https://github.com/bradsec/debapps/discussions
-- **Documentation:** This README
-
-## Changelog
-
-### Version 2.0 (2025-01-27)
-
-- Complete rewrite with modular architecture
-- JSON-driven configuration system
-- Gum-based modern UI
-- SQLite database for tracking
-- Dynamic version resolution
-- Multiple install method support
-- Desktop integration improvements
-- Security hardening
-- Burp Suite installer support
-- Comprehensive testing framework
-
-### Version 1.0
-
-- Initial release with basic functionality
-- Template-based installers
-- Manual version tracking
-
-## Roadmap
-
-- [ ] Snap package support
-- [ ] Flatpak support
-- [ ] Automatic update checks
-- [ ] Backup and restore configurations
-- [ ] Web UI for remote management
-- [ ] Plugin system for custom installers
-- [ ] ARM64 architecture support
-- [ ] Multi-language support
-
----
-
-**Made with** by the Debian community
