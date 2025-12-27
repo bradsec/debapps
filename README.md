@@ -7,7 +7,6 @@ Simple all in one installation scripts for Debian applications
 ![Shell](https://img.shields.io/badge/shell-bash-brightgreen)
 
 ```terminal
-                                                                          
                    ____  __________  ___    ____  ____  _____             
                   / __ \/ ____/ __ )/   |  / __ \/ __ \/ ___/             
                  / / / / __/ / __  / /| | / /_/ / /_/ /\__ \              
@@ -16,7 +15,8 @@ Simple all in one installation scripts for Debian applications
                                                                           
                                                                           
                     Debian Application Installer v2.0                     
-             Bash scripts to simplify Linux app installations                     
+             Bash scripts to simplify Linux app installations             
+                                                                    
                                                                           
 Choose a category:                                                            
                                                                               
@@ -29,8 +29,8 @@ Choose a category:
   Code Editor Apps - Text editors and integrated development environments     
   Burp Suite Apps - Web application security testing                          
   System Apps - System tools and utilities                                    
-  Exit                                                                        
-                                                                                               
+  Reset Database & Cache                                                      
+  Exit                                                                                       
 ```
 
 ### Quick Start
@@ -43,7 +43,7 @@ cd debapps
 # Make executable
 chmod +x debapps
 
-# Run (will request sudo for installations)
+# Run (will request sudo for app installations)
 ./debapps
 ```
 
@@ -91,6 +91,8 @@ chmod +x debapps
 
 ### System Tools
 - Docker - Platform for building, running, and shipping applications in containers 
+- Flatpak - Universal Linux application sandboxing and distribution framework          
+- VLC Media Player - Free and open source cross-platform multimedia player    
 
 ## Installation
 
@@ -118,9 +120,10 @@ DEBAPPS will automatically install required dependencies:
 1. **Category Selection** - Choose from Password Managers, Note Apps, Browsers, etc.
 2. **App Selection** - Browse available applications in the category
 3. **Action Selection** - Install, Remove, Reinstall, Upgrade, or View Info
-4. **Authentication** - Provide sudo password when needed
-5. **Automatic Installation** - DEBAPPS handles download, installation, and configuration
-6. **Desktop Integration** - Applications appear in your desktop menu automatically
+4. **Installation Method** - Choose between Native Package or Search Flatpak (if Flatpak is available)
+5. **Authentication** - Provide sudo password when needed
+6. **Automatic Installation** - DEBAPPS handles download, installation, and configuration
+7. **Desktop Integration** - Applications appear in your desktop menu automatically
 
 ### Install Methods
 
