@@ -1,16 +1,38 @@
-# Claude-related files
+# Claude AI related files - DO NOT COMMIT
+**/CLAUDE.md
+**/.claude/
+**/.claude/**
 memories.json
 reflections.json
 thoughts.json
 claude_context.md
-.claude/
-CLAUDE.md
+.cursor/
+
+# Database files (user-specific installation data)
+data/installed-apps.db
+data/test.db
+data/*.db
+*.db
+
+# Cache files (version cache, temporary downloads)
+data/cache/
+data/cache/**
+*.cache
 
 # Temporary files
 *.tmp
 *.temp
 temp/
 tmp/
+/tmp/
+
+# Downloaded installers and packages
+*.deb
+*.AppImage
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+*.rpm
 
 # Logs
 *.log
@@ -25,6 +47,9 @@ logs/
 ehthumbs.db
 Thumbs.db
 
+# Linux desktop integration
+.directory
+
 # Editor files
 *.swp
 *.swo
@@ -35,3 +60,9 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# Test and development files
+test/
+*.test
+*_test.sh
+scratch/

@@ -1,0 +1,367 @@
+#!/usr/bin/env bash
+
+# DEBAPPS - Debian Application Installer
+# Modern, data-driven application installer with Gum UI
+# https://github.com/bradsec/debapps
+
+set -euo pipefail
+
+# Set default terminal foreground color to bright green (retro CRT aesthetic)
+# ANSI color 83 - all plain text will be green unless explicitly colored
+printf '\033[38;5;83m'
+
+# Reset colors on exit
+trap 'printf "\033[0m"' EXIT
+
+# Script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Configuration paths
+CONFIG_FILE="${SCRIPT_DIR}/config/apps.json"
+DATABASE_FILE="${SCRIPT_DIR}/data/installed-apps.db"
+
+# Load core libraries
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/core/common.sh"
+source "${SCRIPT_DIR}/core/package-manager.sh"
+source "${SCRIPT_DIR}/core/appimage-handler.sh"
+
+# Load lib modules
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/lib/config.sh"
+source "${SCRIPT_DIR}/lib/db.sh"
+source "${SCRIPT_DIR}/lib/detect.sh"
+source "${SCRIPT_DIR}/lib/version.sh"
+source "${SCRIPT_DIR}/lib/ui.sh"
+
+# Load installers
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/lib/installers/deb-installer.sh"
+source "${SCRIPT_DIR}/lib/installers/deb-tarball-installer.sh"
+source "${SCRIPT_DIR}/lib/installers/appimage-installer.sh"
+source "${SCRIPT_DIR}/lib/installers/apt-installer.sh"
+source "${SCRIPT_DIR}/lib/installers/tarball-installer.sh"
+source "${SCRIPT_DIR}/lib/installers/burp-installer.sh"
+
+# Initialize system
+init_system() {
+    # Ensure stderr is not buffered (fixes gum TTY issues)
+    exec 2>&1
+
+    # Check and install dependencies (will prompt for sudo if needed)
+    check_dependencies || {
+        print_message FAIL "Dependency check failed"
+        exit 1
+    }
+
+    # Initialize UI (checks for Gum)
+    print_message INFO "Initializing user interface..."
+    ui_init || {
+        print_message FAIL "Failed to initialize UI system"
+        exit 1
+    }
+
+    # Load configuration
+    print_message INFO "Loading application configuration..."
+    load_config "$CONFIG_FILE" || {
+        print_message FAIL "Failed to load configuration"
+        exit 1
+    }
+
+    # Initialize database
+    print_message INFO "Initializing database..."
+    db_init "$DATABASE_FILE" || {
+        print_message FAIL "Failed to initialize database"
+        exit 1
+    }
+
+    # Sync database versions with actual installed packages
+    db_sync_versions 2>/dev/null || true
+
+    print_message PASS "System initialized successfully"
+    echo
+}
+
+# Request sudo authentication (only when needed)
+request_sudo() {
+    if [[ $(id -u) -ne 0 ]]; then
+        echo
+        print_message INFO "Administrator privileges required for this operation."
+        print_message INFO "Please enter your password..."
+        echo
+
+        # This will prompt for password using standard sudo prompt
+        sudo -v || {
+            print_message FAIL "Authentication failed"
+            return 1
+        }
+
+        print_message PASS "Authentication successful"
+    fi
+}
+
+# Check for required dependencies
+check_dependencies() {
+    local deps=("jq" "gum" "sqlite3" "curl" "wget")
+    local missing=()
+
+    print_message INFO "Checking required dependencies..."
+
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &>/dev/null; then
+            missing+=("$dep")
+        fi
+    done
+
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        # Request sudo before installing
+        request_sudo || exit 1
+
+        print_message INFO "Installing required dependencies: ${missing[*]}"
+
+        for dep in "${missing[@]}"; do
+            pkgmgr install "$dep" || {
+                print_message FAIL "Failed to install ${dep}"
+                exit 1
+            }
+        done
+    fi
+
+    print_message PASS "All dependencies satisfied"
+}
+
+# Execute action based on app and choice
+execute_action() {
+    local app_id="${1:-}"
+    local action="${2:-}"
+
+    if [[ -z "$app_id" ]] || [[ -z "$action" ]]; then
+        return 1
+    fi
+
+    local app_config
+    app_config=$(get_app_config "$app_id")
+
+    local install_method
+    install_method=$(echo "$app_config" | jq -r '.install_method')
+
+    case "$action" in
+        install|reinstall|upgrade)
+            case "$install_method" in
+                deb)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_deb "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_deb "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_deb "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                deb_tarball)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_deb_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_deb_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_deb_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                appimage)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_appimage "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_appimage "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_appimage "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                apt_repo|apt_package)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_apt_repo "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_apt_repo "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_apt_repo "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                tarball)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                installer)
+                    if [[ "$action" == "reinstall" ]]; then
+                        reinstall_burp "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    elif [[ "$action" == "upgrade" ]]; then
+                        upgrade_burp "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    else
+                        install_burp "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    fi
+                    ;;
+                snap)
+                    print_message WARN "Snap installer not yet implemented"
+                    ui_info "Not Implemented" "Snap installer is coming soon. Please use the old scripts for now."
+                    ;;
+                flatpak)
+                    print_message WARN "Flatpak installer not yet implemented"
+                    ui_info "Not Implemented" "Flatpak installer is coming soon. Please use the old scripts for now."
+                    ;;
+                *)
+                    ui_error "Unknown Install Method" "Install method '${install_method}' is not supported."
+                    ;;
+            esac
+            ;;
+        remove)
+            case "$install_method" in
+                deb)
+                    remove_deb "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                deb_tarball)
+                    remove_deb_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                appimage)
+                    remove_appimage "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                apt_repo|apt_package)
+                    remove_apt_repo "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                tarball)
+                    remove_tarball "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                installer)
+                    remove_burp "$app_id" || { echo; read -n 1 -s -r -p "Press any key to continue..."; echo; return 0; }
+                    ;;
+                snap)
+                    print_message WARN "Snap removal not yet implemented"
+                    ui_info "Not Implemented" "Snap removal is coming soon."
+                    ;;
+                flatpak)
+                    print_message WARN "Flatpak removal not yet implemented"
+                    ui_info "Not Implemented" "Flatpak removal is coming soon."
+                    ;;
+                *)
+                    ui_error "Unknown Install Method" "Cannot remove: Install method '${install_method}' is not supported."
+                    ;;
+            esac
+            ;;
+        info)
+            ui_show_app_info "$app_id"
+            ;;
+    esac
+}
+
+# Main menu loop
+main() {
+    init_system
+
+    while true; do
+        # Category selection
+        local category
+        local exit_code=0
+        category=$(ui_category_menu) || exit_code=$?
+
+        if [[ $exit_code -ne 0 ]]; then
+            # User chose exit
+            clear
+            print_message DONE "Exiting DEBAPPS."
+            exit 0
+        fi
+
+        # Check if category is empty
+        if [[ -z "$category" ]]; then
+            continue
+        fi
+
+        # App selection loop
+        while true; do
+            local app_id
+            exit_code=0
+            app_id=$(ui_app_menu "$category") || exit_code=$?
+
+            if [[ $exit_code -ne 0 ]]; then
+                # User chose back
+                break
+            fi
+
+            # Action selection loop
+            while true; do
+                local action
+                exit_code=0
+                action=$(ui_action_menu "$app_id") || exit_code=$?
+
+                if [[ $exit_code -ne 0 ]]; then
+                    # User chose back
+                    break
+                fi
+
+                # Request sudo before executing action
+                if [[ "$action" != "info" ]]; then
+                    request_sudo || {
+                        ui_error "Authentication Failed" "Cannot proceed without administrator privileges"
+                        continue
+                    }
+                fi
+
+                # Execute the action
+                execute_action "$app_id" "$action"
+
+                # Run system cleanup after installation/removal
+                if [[ "$action" == "install" ]] || [[ "$action" == "remove" ]] || [[ "$action" == "reinstall" ]]; then
+                    print_message INFO "Running system cleanup..."
+                    pkgchk
+                fi
+            done
+        done
+    done
+}
+
+# Handle command line arguments
+case "${1:-}" in
+    --version|-v)
+        echo "DEBAPPS v2.0 - Debian Application Installer"
+        echo "Modern, data-driven installer with Gum UI"
+        exit 0
+        ;;
+    --help|-h)
+        cat << EOF
+DEBAPPS v2.0 - Debian Application Installer
+
+USAGE:
+    sudo ./debapps              Run interactive installer
+    sudo ./debapps --version    Show version information
+    sudo ./debapps --help       Show this help message
+
+FEATURES:
+    • Modern Gum-based UI with beautiful colors
+    • JSON-driven configuration (easy to add apps)
+    • Multi-method detection (apt, snap, flatpak, binary, desktop files)
+    • Dynamic version resolution (always latest, no hardcoded versions)
+    • SQLite database for tracking installations
+    • Slack uses direct URL (no HTML scraping!)
+
+REQUIREMENTS:
+    • Debian/Ubuntu-based system
+    • sudo/root privileges
+    • Dependencies: jq, gum, sqlite3, curl, wget (auto-installed)
+
+EXAMPLES:
+    sudo ./debapps              # Interactive mode (recommended)
+
+For more information, visit: https://github.com/bradsec/debapps
+EOF
+        exit 0
+        ;;
+    "")
+        # No arguments, run main menu
+        main
+        ;;
+    *)
+        echo "Unknown option: $1"
+        echo "Try './debapps --help' for more information."
+        exit 1
+        ;;
+esac

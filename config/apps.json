@@ -1,0 +1,722 @@
+{
+  "schema_version": "2.0",
+  "metadata": {
+    "updated": "2025-01-26",
+    "description": "DEBAPPS - Debian Application Installer Configuration",
+    "total_apps": 25
+  },
+  "categories": [
+    {
+      "id": "password",
+      "name": "Password Manager Apps",
+      "description": "Secure password management applications",
+      "apps": [
+        {
+          "id": "bitwarden",
+          "name": "Bitwarden",
+          "description": "Open source password manager with cloud sync",
+          "install_method": "appimage",
+          "source": {
+            "type": "github_release",
+            "repo": "bitwarden/clients",
+            "asset_pattern": "Bitwarden-{VERSION}-x86_64.AppImage",
+            "version_prefix": "desktop-v"
+          },
+          "detection": {
+            "binaries": [
+              "bitwarden"
+            ],
+            "desktop_files": [
+              "bitwarden.desktop"
+            ],
+            "snap_packages": [
+              "bitwarden"
+            ],
+            "flatpak_packages": [
+              "com.bitwarden.desktop"
+            ]
+          },
+          "install_location": "/opt/bitwarden",
+          "dependencies": [
+            "libfuse2",
+            "curl",
+            "wget"
+          ]
+        },
+        {
+          "id": "keepassxc",
+          "name": "KeePassXC",
+          "description": "Offline password manager with strong encryption",
+          "install_method": "appimage",
+          "source": {
+            "type": "github_release",
+            "repo": "keepassxreboot/keepassxc",
+            "asset_pattern": "KeePassXC-{VERSION}-x86_64.AppImage"
+          },
+          "detection": {
+            "binaries": [
+              "keepassxc"
+            ],
+            "apt_packages": [
+              "keepassxc"
+            ],
+            "desktop_files": [
+              "org.keepassxc.KeePassXC.desktop"
+            ]
+          },
+          "install_location": "/opt/keepassxc",
+          "dependencies": [
+            "libfuse2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "notes",
+      "name": "Note Apps",
+      "description": "Note taking and knowledge management",
+      "apps": [
+        {
+          "id": "joplin",
+          "name": "Joplin",
+          "description": "Open source note taking and to-do app with sync",
+          "install_method": "appimage",
+          "source": {
+            "type": "github_release",
+            "repo": "laurent22/joplin",
+            "asset_pattern": "Joplin-{VERSION}.AppImage",
+            "version_prefix": "v"
+          },
+          "detection": {
+            "binaries": [
+              "joplin"
+            ],
+            "desktop_files": [
+              "appimagekit-joplin.desktop"
+            ],
+            "snap_packages": [
+              "joplin-desktop"
+            ]
+          },
+          "install_location": "/opt/joplin",
+          "dependencies": [
+            "libfuse2"
+          ]
+        },
+        {
+          "id": "standardnotes",
+          "name": "Standard Notes",
+          "description": "Encrypted note taking app with extensions",
+          "install_method": "appimage",
+          "source": {
+            "type": "github_release",
+            "repo": "standardnotes/app",
+            "asset_pattern": "standard-notes-{VERSION}-linux-x86_64.AppImage",
+            "version_prefix": "@standardnotes/desktop@"
+          },
+          "detection": {
+            "binaries": [
+              "standardnotes"
+            ],
+            "desktop_files": [
+              "standard-notes.desktop"
+            ]
+          },
+          "install_location": "/opt/standardnotes",
+          "dependencies": [
+            "libfuse2"
+          ]
+        },
+        {
+          "id": "obsidian",
+          "name": "Obsidian",
+          "description": "Powerful knowledge base on top of local folder of markdown files",
+          "install_method": "appimage",
+          "source": {
+            "type": "github_release",
+            "repo": "obsidianmd/obsidian-releases",
+            "asset_pattern": "Obsidian-{VERSION}.AppImage",
+            "version_prefix": "v"
+          },
+          "detection": {
+            "binaries": [
+              "obsidian"
+            ],
+            "desktop_files": [
+              "obsidian.desktop"
+            ]
+          },
+          "install_location": "/opt/obsidian",
+          "dependencies": [
+            "libfuse2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "messenger",
+      "name": "Messenger Apps",
+      "description": "Secure messaging applications",
+      "apps": [
+        {
+          "id": "signal",
+          "name": "Signal",
+          "description": "Private messenger with end-to-end encryption",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://updates.signal.org/desktop/apt/keys.asc",
+            "key_name": "packages.signal",
+            "repo_line": "https://updates.signal.org/desktop/apt xenial main",
+            "repo_file": "signal.list",
+            "package_name": "signal-desktop"
+          },
+          "detection": {
+            "binaries": [
+              "signal-desktop"
+            ],
+            "apt_packages": [
+              "signal-desktop"
+            ],
+            "desktop_files": [
+              "signal-desktop.desktop"
+            ]
+          },
+          "dependencies": [
+            "apt-transport-https"
+          ]
+        },
+        {
+          "id": "threema",
+          "name": "Threema",
+          "description": "Swiss secure messenger",
+          "install_method": "deb",
+          "source": {
+            "type": "direct_download",
+            "url": "https://releases.threema.ch/web-electron/v1/release/Threema-Latest.deb"
+          },
+          "detection": {
+            "binaries": [
+              "threema"
+            ],
+            "apt_packages": [
+              "threema"
+            ],
+            "desktop_files": [
+              "threema.desktop"
+            ]
+          }
+        },
+        {
+          "id": "telegram",
+          "name": "Telegram Desktop",
+          "description": "Fast and secure messaging app with cloud sync",
+          "install_method": "tarball",
+          "source": {
+            "type": "github_release",
+            "repo": "telegramdesktop/tdesktop",
+            "asset_pattern": "tsetup.{VERSION}.tar.xz",
+            "version_prefix": "v"
+          },
+          "detection": {
+            "binaries": [
+              "telegram",
+              "Telegram"
+            ],
+            "desktop_files": [
+              "telegram-desktop.desktop",
+              "telegramdesktop.desktop"
+            ]
+          },
+          "install_location": "/opt/telegram",
+          "post_install": {
+            "symlink": {
+              "source": "/opt/telegram/Telegram",
+              "target": "/usr/bin/telegram"
+            },
+            "desktop_entry": {
+              "file": "/usr/share/applications/telegram-desktop.desktop",
+              "content": "[Desktop Entry]\nVersion=1.0\nName=Telegram Desktop\nComment=Official desktop application for the Telegram messaging service\nTryExec=/usr/bin/telegram\nExec=/usr/bin/telegram -- %u\nIcon=telegram\nTerminal=false\nStartupWMClass=TelegramDesktop\nType=Application\nCategories=Network;InstantMessaging;Qt;\nMimeType=x-scheme-handler/tg;\nKeywords=tg;chat;im;messaging;messenger;sms;tdesktop;\nX-GNOME-UsesNotifications=true"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "office",
+      "name": "Office Apps",
+      "description": "Office productivity suites",
+      "apps": [
+        {
+          "id": "onlyoffice",
+          "name": "OnlyOffice",
+          "description": "Free office suite compatible with Microsoft Office",
+          "install_method": "deb",
+          "source": {
+            "type": "direct_download",
+            "url": "https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb"
+          },
+          "detection": {
+            "binaries": [
+              "onlyoffice-desktopeditors"
+            ],
+            "apt_packages": [
+              "onlyoffice-desktopeditors"
+            ],
+            "desktop_files": [
+              "onlyoffice-desktopeditors.desktop"
+            ]
+          }
+        },
+        {
+          "id": "libreoffice",
+          "name": "LibreOffice",
+          "description": "Free and open source office suite",
+          "install_method": "deb_tarball",
+          "source": {
+            "type": "libreoffice_deb_tarball",
+            "base_url": "https://download.documentfoundation.org/libreoffice/stable/"
+          },
+          "detection": {
+            "binaries": [
+              "libreoffice"
+            ],
+            "apt_packages": [
+              "libreoffice-core"
+            ],
+            "desktop_files": [
+              "libreoffice-startcenter.desktop"
+            ]
+          },
+          "remove_pattern": "libreoffice"
+        }
+      ]
+    },
+    {
+      "id": "collab",
+      "name": "Collaboration Apps",
+      "description": "Team communication and video conferencing",
+      "apps": [
+        {
+          "id": "discord",
+          "name": "Discord",
+          "description": "Voice, video, and text communication platform",
+          "install_method": "deb",
+          "source": {
+            "type": "direct_download",
+            "url": "https://discord.com/api/download?platform=linux&format=deb"
+          },
+          "detection": {
+            "binaries": [
+              "discord"
+            ],
+            "apt_packages": [
+              "discord"
+            ],
+            "desktop_files": [
+              "discord.desktop"
+            ]
+          },
+          "post_install": {
+            "fix_dependencies": true
+          }
+        },
+        {
+          "id": "slack",
+          "name": "Slack",
+          "description": "Team collaboration and messaging",
+          "install_method": "deb",
+          "source": {
+            "type": "slack_latest",
+            "url": "https://downloads.slack-edge.com/releases/linux/latest/prod/x64/slack-desktop-latest-amd64.deb",
+            "note": "Uses direct 'latest' URL instead of HTML scraping for reliability"
+          },
+          "detection": {
+            "binaries": [
+              "slack"
+            ],
+            "apt_packages": [
+              "slack-desktop"
+            ],
+            "desktop_files": [
+              "slack.desktop"
+            ]
+          },
+          "post_install": {
+            "fix_dependencies": true
+          }
+        },
+        {
+          "id": "zoom",
+          "name": "Zoom",
+          "description": "Video conferencing and webinars",
+          "install_method": "deb",
+          "source": {
+            "type": "direct_download",
+            "url": "https://zoom.us/client/latest/zoom_amd64.deb"
+          },
+          "detection": {
+            "binaries": [
+              "zoom"
+            ],
+            "apt_packages": [
+              "zoom"
+            ],
+            "desktop_files": [
+              "zoom.desktop",
+              "Zoom.desktop"
+            ]
+          },
+          "post_install": {
+            "fix_dependencies": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "Web Browsers and Web API Tools",
+      "description": "Web browsers and API development tools",
+      "apps": [
+        {
+          "id": "firefox",
+          "name": "Firefox",
+          "description": "Fast, private and secure web browser from Mozilla",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://packages.mozilla.org/apt/repo-signing-key.gpg",
+            "key_name": "packages.mozilla.org",
+            "repo_line": "https://packages.mozilla.org/apt mozilla main",
+            "repo_file": "mozilla.list",
+            "package_name": "firefox",
+            "preferences": {
+              "file": "/etc/apt/preferences.d/mozilla",
+              "content": "Package: *\\nPin: origin packages.mozilla.org\\nPin-Priority: 1000\\n\\nPackage: firefox*\\nPin: release o=Ubuntu\\nPin-Priority: -1"
+            }
+          },
+          "detection": {
+            "binaries": [
+              "firefox"
+            ],
+            "apt_packages": [
+              "firefox",
+              "firefox-esr"
+            ],
+            "snap_packages": [
+              "firefox"
+            ],
+            "desktop_files": [
+              "firefox.desktop"
+            ]
+          },
+          "remove_conflicts": [
+            "firefox-esr"
+          ]
+        },
+        {
+          "id": "chrome",
+          "name": "Google Chrome",
+          "description": "Fast and secure web browser from Google",
+          "install_method": "deb",
+          "source": {
+            "type": "direct_download",
+            "url": "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+          },
+          "detection": {
+            "binaries": [
+              "google-chrome",
+              "google-chrome-stable"
+            ],
+            "apt_packages": [
+              "google-chrome-stable"
+            ],
+            "desktop_files": [
+              "google-chrome.desktop"
+            ]
+          }
+        },
+        {
+          "id": "brave",
+          "name": "Brave",
+          "description": "Privacy-focused web browser with ad blocking",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg",
+            "key_name": "brave-browser-archive",
+            "repo_line": "https://brave-browser-apt-release.s3.brave.com/ stable main",
+            "repo_file": "brave-browser.list",
+            "package_name": "brave-browser"
+          },
+          "detection": {
+            "binaries": [
+              "brave-browser"
+            ],
+            "apt_packages": [
+              "brave-browser"
+            ],
+            "desktop_files": [
+              "brave-browser.desktop"
+            ]
+          }
+        },
+        {
+          "id": "tor",
+          "name": "Tor Browser",
+          "description": "Anonymous web browsing through the Tor network",
+          "install_method": "apt_package",
+          "source": {
+            "type": "apt_package",
+            "package_name": "torbrowser-launcher"
+          },
+          "detection": {
+            "binaries": [
+              "torbrowser-launcher"
+            ],
+            "desktop_files": [
+              "torbrowser.desktop"
+            ],
+            "apt_packages": [
+              "torbrowser-launcher"
+            ]
+          },
+          "install_location": "system"
+        },
+        {
+          "id": "postman",
+          "name": "Postman",
+          "description": "API development and testing platform",
+          "install_method": "tarball",
+          "source": {
+            "type": "direct_download",
+            "url": "https://dl.pstmn.io/download/latest/linux64"
+          },
+          "detection": {
+            "binaries": [
+              "postman"
+            ],
+            "desktop_files": [
+              "postman.desktop"
+            ]
+          },
+          "install_location": "/opt/Postman",
+          "post_install": {
+            "symlink": {
+              "source": "/opt/Postman/Postman",
+              "target": "/usr/sbin/postman"
+            },
+            "desktop_entry": {
+              "file": "/usr/share/applications/postman.desktop",
+              "content": "[Desktop Entry]\\nName=Postman\\nComment=Postman is an API platform for building and using APIs\\nGenericName=Postman\\nX-GNOME-FullName=Postman\\nExec=/opt/Postman/Postman %u\\nTerminal=false\\nX-MultipleArgs=false\\nType=Application\\nIcon=/opt/Postman/app/resources/app/assets/icon.png\\nCategories=Network;WebBrowser;\\nStartupWMClass=Postman\\nStartupNotify=true"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "code",
+      "name": "Code Editor Apps",
+      "description": "Text editors and integrated development environments",
+      "apps": [
+        {
+          "id": "sublime-text",
+          "name": "Sublime Text",
+          "description": "Sophisticated text editor for code, markup and prose",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://download.sublimetext.com/sublimehq-pub.gpg",
+            "key_name": "sublimehq-archive",
+            "repo_line": "https://download.sublimetext.com/ apt/stable/",
+            "repo_file": "sublime-text.list",
+            "package_name": "sublime-text"
+          },
+          "detection": {
+            "binaries": [
+              "subl"
+            ],
+            "apt_packages": [
+              "sublime-text"
+            ],
+            "desktop_files": [
+              "sublime_text.desktop"
+            ]
+          },
+          "dependencies": [
+            "apt-transport-https"
+          ]
+        },
+        {
+          "id": "vscode",
+          "name": "Visual Studio Code",
+          "description": "Free source code editor from Microsoft",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://packages.microsoft.com/keys/microsoft.asc",
+            "key_name": "packages.microsoft",
+            "repo_line": "https://packages.microsoft.com/repos/code stable main",
+            "repo_file": "vscode.list",
+            "package_name": "code"
+          },
+          "detection": {
+            "binaries": [
+              "code"
+            ],
+            "apt_packages": [
+              "code"
+            ],
+            "snap_packages": [
+              "code"
+            ],
+            "desktop_files": [
+              "code.desktop"
+            ]
+          },
+          "dependencies": [
+            "curl",
+            "wget",
+            "gpg",
+            "software-properties-common",
+            "apt-transport-https"
+          ]
+        },
+        {
+          "id": "vscodium",
+          "name": "VSCodium",
+          "description": "Open source build of VS Code without Microsoft telemetry",
+          "install_method": "deb",
+          "source": {
+            "type": "github_release",
+            "repo": "VSCodium/vscodium",
+            "asset_pattern": "codium_{VERSION}_amd64.deb"
+          },
+          "detection": {
+            "binaries": [
+              "codium"
+            ],
+            "apt_packages": [
+              "codium"
+            ],
+            "desktop_files": [
+              "codium.desktop"
+            ]
+          }
+        },
+        {
+          "id": "cursor",
+          "name": "Cursor AI",
+          "description": "AI-powered code editor built on VS Code",
+          "install_method": "appimage",
+          "source": {
+            "type": "cursor_latest",
+            "url": "https://api2.cursor.sh/updates/download/golden/linux-x64/cursor/latest"
+          },
+          "detection": {
+            "binaries": [
+              "cursor"
+            ],
+            "desktop_files": [
+              "cursor.desktop"
+            ]
+          },
+          "install_location": "/opt/cursor",
+          "dependencies": [
+            "libfuse2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "burp",
+      "name": "Burp Suite Apps",
+      "description": "Web application security testing",
+      "apps": [
+        {
+          "id": "burpsuite-community",
+          "name": "Burp Suite Community",
+          "description": "Free web security testing tool",
+          "install_method": "installer",
+          "source": {
+            "type": "burp_installer",
+            "edition": "community",
+            "base_url": "https://portswigger.net/burp/releases"
+          },
+          "detection": {
+            "binaries": [
+              "burpsuite"
+            ],
+            "desktop_files": [
+              "burpsuite-community.desktop"
+            ]
+          },
+          "install_location": "/opt/burpsuite"
+        },
+        {
+          "id": "burpsuite-pro",
+          "name": "Burp Suite Professional",
+          "description": "Professional web security testing tool",
+          "install_method": "installer",
+          "source": {
+            "type": "burp_installer",
+            "edition": "pro",
+            "base_url": "https://portswigger.net/burp/releases"
+          },
+          "detection": {
+            "binaries": [
+              "burpsuite-pro"
+            ],
+            "desktop_files": [
+              "burpsuite-pro.desktop"
+            ]
+          },
+          "install_location": "/opt/burpsuite-pro"
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "name": "System Apps",
+      "description": "System tools and utilities",
+      "apps": [
+        {
+          "id": "docker",
+          "name": "Docker",
+          "description": "Platform for building, running, and shipping applications in containers",
+          "install_method": "apt_repo",
+          "source": {
+            "type": "apt_repository",
+            "key_url": "https://download.docker.com/linux/debian/gpg",
+            "key_name": "docker",
+            "repo_line": "https://download.docker.com/linux/debian <DISTRO> stable",
+            "repo_file": "docker.list",
+            "package_name": "docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+          },
+          "detection": {
+            "binaries": [
+              "docker"
+            ],
+            "apt_packages": [
+              "docker-ce"
+            ]
+          },
+          "remove_conflicts": [
+            "docker.io",
+            "docker-doc",
+            "docker-compose",
+            "podman-docker",
+            "containerd",
+            "runc"
+          ],
+          "dependencies": [
+            "ca-certificates",
+            "curl",
+            "gnupg"
+          ],
+          "post_install_script": "# Add user to docker group\nif ! getent group docker > /dev/null; then sudo groupadd docker; fi\nsudo usermod -aG docker $USER\necho 'User added to docker group. Log out and back in for changes to take effect.'\necho 'Or run: newgrp docker'"
+        }
+      ]
+    }
+  ]
+}
