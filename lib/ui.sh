@@ -405,14 +405,6 @@ ui_search_flatpak() {
     rm -f "$temp_file"
 
     if [[ -z "$search_results" ]]; then
-        gum style \
-            --foreground "$UI_ERROR_COLOR" \
-            --border rounded \
-            --border-foreground "$UI_ERROR_COLOR" \
-            --padding "1 2" \
-            --margin "1 0" \
-            "[INFO] No Results Found" >&2
-
         printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages found for '${app_name}'" >&2
 
         gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..." >&2
@@ -469,14 +461,6 @@ ui_search_flatpak() {
 
     # Check if we got any valid results
     if [[ ${#options[@]} -eq 0 ]]; then
-        gum style \
-            --foreground "$UI_ERROR_COLOR" \
-            --border rounded \
-            --border-foreground "$UI_ERROR_COLOR" \
-            --padding "1 2" \
-            --margin "1 0" \
-            "[INFO] No Results Found" >&2
-
         printf '\033[38;5;83m%s\033[38;5;83m\n\n' "No Flatpak packages with versions found for '${app_name}'" >&2
 
         gum style --foreground "$UI_PRIMARY_COLOR" "Press any key to return to menu..." >&2
