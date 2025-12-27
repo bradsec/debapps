@@ -100,19 +100,75 @@ request_sudo() {
     fi
 }
 
+# Install Gum from GitHub releases (required for ARM/Raspberry Pi)
+# Usage: install_gum_from_github
+install_gum_from_github() {
+    print_message INFO "Installing Gum from GitHub releases..."
+
+    # Detect architecture
+    local arch
+    arch=$(dpkg --print-architecture 2>/dev/null || echo "amd64")
+
+    print_message INFO "Detected architecture: ${arch}"
+
+    # Get latest Gum release
+    local latest_version
+    latest_version=$(curl -sL "https://api.github.com/repos/charmbracelet/gum/releases/latest" | jq -r '.tag_name' | sed 's/^v//')
+
+    if [[ -z "$latest_version" ]]; then
+        print_message FAIL "Failed to get Gum latest version"
+        return 1
+    fi
+
+    print_message INFO "Latest Gum version: ${latest_version}"
+
+    # Build download URL based on architecture
+    local deb_file="gum_${latest_version}_${arch}.deb"
+    local download_url="https://github.com/charmbracelet/gum/releases/download/v${latest_version}/${deb_file}"
+
+    print_message INFO "Downloading Gum from: ${download_url}"
+
+    # Download .deb file
+    local tmp_deb="/tmp/${deb_file}"
+    wget -q --show-progress -O "$tmp_deb" "$download_url" || {
+        print_message FAIL "Failed to download Gum"
+        return 1
+    }
+
+    # Install .deb package
+    print_message INFO "Installing Gum package..."
+    sudo dpkg -i "$tmp_deb" || {
+        print_message INFO "Fixing dependencies..."
+        sudo apt-get -y --fix-broken install
+    }
+
+    # Verify installation
+    if command -v gum &>/dev/null; then
+        print_message PASS "Gum installed successfully"
+        rm -f "$tmp_deb"
+        return 0
+    else
+        print_message FAIL "Gum installation verification failed"
+        rm -f "$tmp_deb"
+        return 1
+    fi
+}
+
 # Check for required dependencies
 check_dependencies() {
-    local deps=("jq" "gum" "sqlite3" "curl" "wget")
+    local deps=("jq" "sqlite3" "curl" "wget")
     local missing=()
 
     print_message INFO "Checking required dependencies..."
 
+    # Check standard dependencies
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &>/dev/null; then
             missing+=("$dep")
         fi
     done
 
+    # Install missing standard dependencies
     if [[ ${#missing[@]} -gt 0 ]]; then
         # Request sudo before installing
         request_sudo || exit 1
@@ -125,6 +181,32 @@ check_dependencies() {
                 exit 1
             }
         done
+    fi
+
+    # Check for Gum separately (special handling for ARM/Raspberry Pi)
+    if ! command -v gum &>/dev/null; then
+        request_sudo || exit 1
+
+        print_message INFO "Gum not found in system packages"
+
+        # Try apt first (works on some systems)
+        if apt-cache search --names-only "^gum$" 2>/dev/null | grep -q "^gum "; then
+            print_message INFO "Installing Gum from apt repositories..."
+            pkgmgr install gum || {
+                print_message WARN "Failed to install from apt, trying GitHub releases..."
+                install_gum_from_github || {
+                    print_message FAIL "Failed to install Gum"
+                    exit 1
+                }
+            }
+        else
+            # Install from GitHub releases (ARM/Raspberry Pi path)
+            print_message INFO "Gum not available in apt, installing from GitHub releases..."
+            install_gum_from_github || {
+                print_message FAIL "Failed to install Gum"
+                exit 1
+            }
+        fi
     fi
 
     print_message PASS "All dependencies satisfied"
