@@ -33,17 +33,19 @@ Choose a category:
                                                                                                
 ```
 
-## Features
+### Quick Start
 
-- **Modern Gum-based UI** with retro CRT green terminal aesthetic
-- **JSON-driven configuration** - easily add new applications
-- **Multi-method detection** - detects apps installed via apt, snap, flatpak, AppImage, or manual installation
-- **Dynamic version resolution** - always fetches latest versions, no hardcoded version numbers
-- **SQLite database** - tracks installed applications and files
-- **Multiple install methods** - supports .deb, AppImage, apt repositories, tarballs, and installers
-- **Smart dependency handling** - automatically installs required dependencies
-- **Desktop integration** - properly integrates AppImages with desktop search and menus
-- **Security hardened** - SQL injection protection, input validation, safe file operations
+```bash
+# Clone the repository
+git clone https://github.com/bradsec/debapps.git
+cd debapps
+
+# Make executable
+chmod +x debapps
+
+# Run (will request sudo for installations)
+./debapps
+```
 
 ## Supported Applications
 
@@ -100,20 +102,6 @@ DEBAPPS will automatically install required dependencies:
 - `sqlite3` - Database engine
 - `curl` - URL transfer tool
 - `wget` - File downloader
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/bradsec/debapps.git
-cd debapps
-
-# Make executable
-chmod +x debapps
-
-# Run (will request sudo for installations)
-./debapps
-```
 
 ### Usage
 
