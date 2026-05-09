@@ -1,0 +1,70 @@
+# Local agent and assistant files
+AGENTS.md
+CLAUDE.md
+CODEX.md
+.agents/
+.claude/
+.codex/
+.claude-mem/
+.mcp/
+.serena/
+.cursor/
+memories.json
+reflections.json
+thoughts.json
+claude_context.md
+codex_context.md
+codex_memory.md
+claude_*.md
+codex_*.md
+*_WORKING.md
+*_PLAN.md
+*_NOTES.md
+*_SCRATCH.md
+INSTALL_METHOD_UPDATE_PLAN.md
+
+# Local planning and scratch files
+TODO.local.md
+NOTES.local.md
+PLAN.local.md
+SCRATCH.local.md
+*.local.md
+*.scratch
+scratch/
+planning/
+worktrees/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+.cache/
+.pytest_cache/
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.history/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+*.rej
