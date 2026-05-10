@@ -43,6 +43,7 @@ print_message PASS "${SCRIPT_SOURCE} active."
 script_fetch() {
   local script_name="$1"
   local script_local="${SCRIPT_DIR}/src/${script_name}"
+  local script_remote="https://raw.githubusercontent.com/bradsec/debapps/main/src/${script_name}"
   
   # Validate script name to prevent path injection
   if [[ ! "$script_name" =~ ^[a-zA-Z0-9_-]+\.sh$ ]]; then
@@ -53,13 +54,27 @@ script_fetch() {
   if [[ -f "${script_local}" ]]; then
     print_message INFO "Using local script: ${script_local}"
     bash "${script_local}"
-  else
-    print_message FAIL "Local script not found: ${script_local}"
-    print_message WARN "Remote script execution has been disabled for security reasons."
-    print_message INFO "Please clone the repository to use all features:"
-    print_message INFO "git clone https://github.com/bradsec/debapps.git"
-    return 1
+    return $?
   fi
+
+  print_message WARN "Local script not found: ${script_local}"
+
+  if wget -q --spider "${script_remote}"; then
+    local tmp_script_file
+    tmp_script_file=$(mktemp)
+    wget -qO "${tmp_script_file}" "${script_remote}"
+    chmod 700 "${tmp_script_file}"
+    print_message INFO "Using remote script: ${script_remote}"
+    bash "${tmp_script_file}"
+    local script_status=$?
+    rm -f "${tmp_script_file}"
+    return "${script_status}"
+  fi
+
+  print_message FAIL "Unable to fetch script: ${script_name}"
+  print_message INFO "Please clone the repository to use all features:"
+  print_message INFO "git clone https://github.com/bradsec/debapps.git"
+  return 1
 }
 
 ### END OF REQUIRED FUNCTION ###
