@@ -341,15 +341,33 @@ function check_superuser() {
 
 # Get non-root user
 function get_user() {
-    if [[ $(command -v logname) ]] >/dev/null 2>&1; then
-        echo -ne "$(logname)"
-    elif [[ -n ${SUDO_USER} ]]; then
-        echo -ne "${SUDO_USER}"
-    elif [[ $(command -v whoami) ]] >/dev/null 2>&1; then
-        echo -ne "$(whoami)"
-    else
-        echo -ne "${USER}"
+    local detected_user=""
+
+    # Prefer the invoking sudo user so remote `sudo bash -c "$(wget ...)"` runs
+    # do not record managed installs under root's home directory.
+    if [[ -n "${SUDO_USER}" && "${SUDO_USER}" != "root" ]]; then
+        detected_user="${SUDO_USER}"
+    elif command -v logname >/dev/null 2>&1; then
+        detected_user=$(logname 2>/dev/null || true)
     fi
+
+    if [[ -z "${detected_user}" && -n "${SUDO_UID}" ]]; then
+        detected_user=$(getent passwd "${SUDO_UID}" 2>/dev/null | cut -d: -f1)
+    fi
+
+    if [[ -z "${detected_user}" && -n "${LOGNAME}" ]]; then
+        detected_user="${LOGNAME}"
+    fi
+
+    if [[ -z "${detected_user}" ]] && command -v whoami >/dev/null 2>&1; then
+        detected_user=$(whoami)
+    fi
+
+    if [[ -z "${detected_user}" ]]; then
+        detected_user="${USER:-root}"
+    fi
+
+    echo -ne "${detected_user}"
 }
 
 function remove_opt_app() {
